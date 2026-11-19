@@ -1,0 +1,26 @@
+# Secrets et configuration locale
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Données importées et générées (garder les dossiers, pas le contenu)
+uploads/*
+!uploads/.gitkeep
+data/generated/
+
+# IDE / système
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs locaux
+*.log

@@ -1,0 +1,78 @@
+@startuml
+' Diagramme de cas d'utilisation — E-Commerce Log Monitoring and Analytics Platform
+' À ouvrir sur https://www.plantuml.com/plantuml ou avec l'extension PlantUML de VS Code / draw.io
+left to right direction
+skinparam actorStyle default
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #FFFDF2
+  BorderColor #7A5C00
+}
+
+actor "Utilisateur\n(abstrait)" as User
+actor "Administrateur" as Admin
+actor "Client" as Client
+actor "Moteur d'alerting\n(worker planifié)" as Worker
+actor "Service de notification\n(Email / Webhook)" as Notif
+
+Admin -|> User
+Client -|> User
+
+rectangle "Plateforme « E-Commerce Log Monitoring and Analytics »" {
+  ' Fonctionnalités communes
+  usecase "S'authentifier\n(US01, US09)" as UC_Auth
+  usecase "Consulter le tableau de bord\n(US06, US10)" as UC_Dash
+  usecase "Rechercher et filtrer les logs\n(US05, US13)" as UC_Search
+  usecase "Exporter les résultats (CSV)" as UC_Export
+
+  ' Administrateur
+  usecase "Gérer les comptes clients\n(US02)" as UC_Accounts
+  usecase "Importer des fichiers de logs\n(US03)" as UC_Import
+  usecase "Valider le fichier\n(RM06, RM10)" as UC_Validate
+  usecase "Consulter les logs\n(US04)" as UC_Logs
+  usecase "Consulter le détail d'un log" as UC_Detail
+  usecase "Identifier les erreurs fréquentes\n(US07)" as UC_Errors
+  usecase "Configurer les règles d'alerte\n(Module G)" as UC_Rules
+  usecase "Consulter les alertes\n(US08)" as UC_Alerts
+  usecase "Acquitter / résoudre une alerte" as UC_Ack
+
+  ' Client
+  usecase "Consulter les statistiques\ndes transactions (US11)" as UC_Tx
+  usecase "Analyser les abandons de panier\n(US12)" as UC_Cart
+
+  ' Alerting
+  usecase "Détecter les pics d'erreurs\n(Module I)" as UC_Peaks
+  usecase "Générer une alerte\n(RM17, RM18)" as UC_Gen
+  usecase "Notifier l'équipe" as UC_Notify
+}
+
+User --> UC_Auth
+User --> UC_Dash
+User --> UC_Search
+
+Admin --> UC_Accounts
+Admin --> UC_Import
+Admin --> UC_Logs
+Admin --> UC_Errors
+Admin --> UC_Rules
+Admin --> UC_Alerts
+
+Client --> UC_Tx
+Client --> UC_Cart
+
+UC_Peaks <-- Worker
+UC_Gen <-- Worker
+UC_Notify <-- Notif
+
+UC_Export .> UC_Search : <<extend>>
+UC_Import .> UC_Validate : <<include>>
+UC_Detail .> UC_Logs : <<extend>>
+UC_Ack .> UC_Alerts : <<extend>>
+UC_Peaks .> UC_Gen : <<extend>>
+UC_Gen .> UC_Notify : <<include>>
+
+note bottom of UC_Auth
+  Toutes les fonctionnalités nécessitent une authentification (RM01).
+  Le Client n'accède qu'aux données autorisées (RM04, RM16).
+end note
+@enduml
