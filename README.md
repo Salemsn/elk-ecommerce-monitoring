@@ -52,6 +52,32 @@ curl http://localhost:8000/health       # {"status": "healthy"}
 - Application : http://localhost:8000
 - Kibana : http://localhost:5601
 
+## Générer et ingérer des logs e-commerce
+
+Le générateur (`scripts/generate_logs.py`, Faker) produit des événements réalistes : navigation,
+paniers, paiements, commandes, erreurs applicatives, lenteurs, sécurité, avec quelques pics
+d'erreurs de paiement pour tester les alertes.
+
+```bash
+docker compose run --rm generator --count 20000 --days 30 --out uploads
+```
+
+Les fichiers CSV et JSON sont écrits dans `uploads/`. Logstash les détecte en quelques secondes
+(un pipeline par format, voir `logstash/config/pipelines.yml`) et les indexe dans
+`logs-ecommerce-AAAA.MM` :
+
+```bash
+curl "http://localhost:9200/_cat/indices/logs-ecommerce-*?v"
+curl "http://localhost:9200/logs-ecommerce-*/_count"
+```
+
+Traitements Logstash : parsing CSV / JSON, date (`@timestamp`), géolocalisation de l'IP,
+tags par catégorie, tag `suspicious` (score de fraude > 0,7), identifiant SHA-256 pour éviter
+les doublons en cas de réimport. Des fichiers d'exemple sont fournis dans `data/sample/`.
+
+> Sécurité Elasticsearch désactivée volontairement (environnement de développement local).
+> Projet testé avec Docker 20.10 et Docker Compose 2.12.
+
 ## Arrêter
 
 ```bash

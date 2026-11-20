@@ -33,6 +33,7 @@
                               "city_name":    { "type": "keyword" },
                               "location":     { "type": "geo_point" } } },
         "file_id":        { "type": "keyword" },
+        "source_file":    { "type": "keyword" },
         "tags":           { "type": "keyword" }
       }
     }

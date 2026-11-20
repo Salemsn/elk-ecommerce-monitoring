@@ -1,0 +1,201 @@
+timestamp,level,category,event_type,service,message,http_status,response_time_ms,order_id,product_id,product_name,session_id,user_id,payment_method,amount,currency,fraud_score,client_ip
+2026-11-17T00:12:52.943Z,INFO,comportement,page_view,catalog,Home page viewed,200,136.0,,,,S-218b8bc7,U-61498,,,,,213.42.129.77
+2026-11-17T00:13:24.943Z,INFO,comportement,product_view,catalog,Product SKU-1003 viewed,200,70.2,,SKU-1003,Ordinateur portable 15 pouces,S-218b8bc7,U-61498,,,,,213.42.129.77
+2026-11-17T00:14:54.943Z,INFO,comportement,product_view,catalog,Product SKU-1002 viewed,200,114.9,,SKU-1002,Casque Bluetooth X200,S-218b8bc7,U-61498,,,,,213.42.129.77
+2026-11-17T00:15:54.943Z,INFO,comportement,add_to_cart,cart,Product SKU-1002 added to cart (qty 2),201,66.5,,SKU-1002,Casque Bluetooth X200,S-218b8bc7,U-61498,,299.8,TND,,213.42.129.77
+2026-11-17T00:19:29.285Z,INFO,comportement,page_view,catalog,Home page viewed,200,113.2,,,,S-1cbe1753,,,,,,202.234.38.130
+2026-11-17T00:19:37.285Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,206.8,,SKU-1008,Sac à dos urbain,S-1cbe1753,,,,,,202.234.38.130
+2026-11-17T00:19:49.285Z,INFO,comportement,product_view,catalog,Product SKU-1010 viewed,200,135.7,,SKU-1010,Coffret dattes Deglet Nour,S-1cbe1753,,,,,,202.234.38.130
+2026-11-17T00:20:37.285Z,INFO,comportement,add_to_cart,cart,Product SKU-1010 added to cart (qty 1),201,84.4,,SKU-1010,Coffret dattes Deglet Nour,S-1cbe1753,,,39.0,TND,,202.234.38.130
+2026-11-17T00:42:46.943Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 20 min,,,,SKU-1002,Casque Bluetooth X200,S-218b8bc7,U-61498,,299.8,TND,,213.42.129.77
+2026-11-17T01:09:35.285Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 43 min,,,,SKU-1010,Coffret dattes Deglet Nour,S-1cbe1753,,,39.0,TND,,202.234.38.130
+2026-11-17T03:04:39.749Z,INFO,comportement,page_view,catalog,Home page viewed,200,84.6,,,,S-b6112f2e,U-94820,,,,,141.124.64.192
+2026-11-17T03:05:05.749Z,INFO,comportement,product_view,catalog,Product SKU-1010 viewed,200,126.6,,SKU-1010,Coffret dattes Deglet Nour,S-b6112f2e,U-94820,,,,,141.124.64.192
+2026-11-17T03:05:18.749Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,94.8,,SKU-1008,Sac à dos urbain,S-b6112f2e,U-94820,,,,,141.124.64.192
+2026-11-17T03:06:41.749Z,INFO,comportement,product_view,catalog,Product SKU-1012 viewed,200,150.9,,SKU-1012,Parfum 100 ml,S-b6112f2e,U-94820,,,,,141.124.64.192
+2026-11-17T03:07:44.749Z,INFO,comportement,product_view,catalog,Product SKU-1009 viewed,200,128.0,,SKU-1009,Huile d'olive extra vierge 1 L,S-b6112f2e,U-94820,,,,,141.124.64.192
+2026-11-17T03:08:19.749Z,INFO,comportement,add_to_cart,cart,Product SKU-1009 added to cart (qty 1),201,94.5,,SKU-1009,Huile d'olive extra vierge 1 L,S-b6112f2e,U-94820,,24.5,TND,,141.124.64.192
+2026-11-17T03:50:05.749Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 43 min,,,,SKU-1009,Huile d'olive extra vierge 1 L,S-b6112f2e,U-94820,,24.5,TND,,141.124.64.192
+2026-11-17T04:54:58.831Z,INFO,comportement,page_view,catalog,Home page viewed,200,139.3,,,,S-4043439f,,,,,,19.73.232.159
+2026-11-17T04:55:19.831Z,INFO,comportement,product_view,catalog,Product SKU-1004 viewed,200,102.8,,SKU-1004,Montre connectée Fit 3,S-4043439f,,,,,,19.73.232.159
+2026-11-17T04:56:46.831Z,INFO,comportement,product_view,catalog,Product SKU-1004 viewed,200,159.2,,SKU-1004,Montre connectée Fit 3,S-4043439f,,,,,,19.73.232.159
+2026-11-17T04:57:24.831Z,INFO,comportement,product_view,catalog,Product SKU-1014 viewed,200,181.6,,SKU-1014,Écran 27 pouces,S-4043439f,,,,,,19.73.232.159
+2026-11-17T04:58:13.831Z,INFO,comportement,product_view,catalog,Product SKU-1001 viewed,200,148.7,,SKU-1001,Smartphone Galaxy A55,S-4043439f,,,,,,19.73.232.159
+2026-11-17T08:18:26.917Z,ERROR,erreur,app_error,auth,Token signature verification failed,500,747.4,,,,,,,,,,147.120.190.43
+2026-11-17T08:48:49.671Z,INFO,comportement,page_view,catalog,Home page viewed,200,112.7,,,,S-47b82c83,U-84830,,,,,161.161.248.13
+2026-11-17T08:49:34.671Z,INFO,comportement,product_view,catalog,Product SKU-1002 viewed,200,142.7,,SKU-1002,Casque Bluetooth X200,S-47b82c83,U-84830,,,,,161.161.248.13
+2026-11-17T08:50:26.671Z,INFO,comportement,add_to_cart,cart,Product SKU-1002 added to cart (qty 3),201,110.0,,SKU-1002,Casque Bluetooth X200,S-47b82c83,U-84830,,449.7,TND,,161.161.248.13
+2026-11-17T08:53:23.671Z,INFO,transaction,checkout_started,checkout,Checkout started,200,173.2,,SKU-1002,Casque Bluetooth X200,S-47b82c83,U-84830,paypal,449.7,TND,,161.161.248.13
+2026-11-17T08:53:32.671Z,INFO,transaction,payment_success,payment,Payment accepted for order ORD-100006,200,562.4,ORD-100006,SKU-1002,Casque Bluetooth X200,S-47b82c83,U-84830,paypal,449.7,TND,0.015,161.161.248.13
+2026-11-17T08:53:33.671Z,INFO,transaction,order_created,checkout,Order ORD-100006 created (449.7 TND),201,146.9,ORD-100006,SKU-1002,Casque Bluetooth X200,S-47b82c83,U-84830,paypal,449.7,TND,,161.161.248.13
+2026-11-17T09:27:45.782Z,INFO,comportement,page_view,catalog,Home page viewed,200,148.7,,,,S-90b41258,,,,,,122.14.197.162
+2026-11-17T09:28:40.782Z,INFO,comportement,product_view,catalog,Product SKU-1003 viewed,200,227.9,,SKU-1003,Ordinateur portable 15 pouces,S-90b41258,,,,,,122.14.197.162
+2026-11-17T09:53:14.079Z,WARNING,securite,login_failed,auth,Failed login for blancmartin@example.org,401,62.4,,,,,,,,,,194.226.111.15
+2026-11-17T11:47:25.005Z,INFO,comportement,page_view,catalog,Home page viewed,200,86.9,,,,S-75e7a3b8,,,,,,160.26.35.180
+2026-11-17T11:47:53.005Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,124.0,,SKU-1008,Sac à dos urbain,S-75e7a3b8,,,,,,160.26.35.180
+2026-11-17T11:48:31.005Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,118.0,,SKU-1011,Tapis berbère 160x230,S-75e7a3b8,,,,,,160.26.35.180
+2026-11-17T12:56:18.111Z,INFO,comportement,page_view,catalog,Home page viewed,200,115.1,,,,S-786f4e90,,,,,,202.214.211.62
+2026-11-17T12:57:16.111Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,160.8,,SKU-1016,Livre de cuisine tunisienne,S-786f4e90,,,,,,202.214.211.62
+2026-11-17T12:58:11.111Z,INFO,comportement,product_view,catalog,Product SKU-1005 viewed,200,143.2,,SKU-1005,Machine à café expresso,S-786f4e90,,,,,,202.214.211.62
+2026-11-17T12:58:54.111Z,INFO,comportement,add_to_cart,cart,Product SKU-1005 added to cart (qty 1),201,94.6,,SKU-1005,Machine à café expresso,S-786f4e90,,,459.0,TND,,202.214.211.62
+2026-11-17T13:29:36.371Z,ERROR,erreur,app_error,catalog,Database connection pool exhausted,500,83.7,,,,,,,,,,132.46.102.178
+2026-11-17T13:45:45.111Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 48 min,,,,SKU-1005,Machine à café expresso,S-786f4e90,,,459.0,TND,,202.214.211.62
+2026-11-17T14:27:47.934Z,INFO,comportement,page_view,catalog,Home page viewed,200,138.9,,,,S-983de41d,U-30849,,,,,131.20.89.188
+2026-11-17T14:28:25.934Z,INFO,comportement,product_view,catalog,Product SKU-1004 viewed,200,151.2,,SKU-1004,Montre connectée Fit 3,S-983de41d,U-30849,,,,,131.20.89.188
+2026-11-17T14:29:03.934Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,160.5,,SKU-1011,Tapis berbère 160x230,S-983de41d,U-30849,,,,,131.20.89.188
+2026-11-17T14:40:59.284Z,INFO,comportement,page_view,catalog,Home page viewed,200,142.6,,,,S-49c378e1,U-22811,,,,,202.71.83.83
+2026-11-17T14:42:25.284Z,INFO,comportement,product_view,catalog,Product SKU-1002 viewed,200,211.4,,SKU-1002,Casque Bluetooth X200,S-49c378e1,U-22811,,,,,202.71.83.83
+2026-11-17T14:55:11.459Z,INFO,comportement,page_view,catalog,Home page viewed,200,133.2,,,,S-09a4847e,U-23331,,,,,35.245.140.60
+2026-11-17T14:55:20.459Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,135.9,,SKU-1007,Baskets running,S-09a4847e,U-23331,,,,,35.245.140.60
+2026-11-17T14:55:57.459Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,165.2,,SKU-1007,Baskets running,S-09a4847e,U-23331,,,,,35.245.140.60
+2026-11-17T14:57:18.459Z,INFO,comportement,product_view,catalog,Product SKU-1002 viewed,200,140.7,,SKU-1002,Casque Bluetooth X200,S-09a4847e,U-23331,,,,,35.245.140.60
+2026-11-17T15:11:15.241Z,INFO,comportement,page_view,catalog,Home page viewed,200,157.3,,,,S-d200184e,U-50573,,,,,214.247.88.70
+2026-11-17T15:11:52.241Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,194.6,,SKU-1013,Console de jeux,S-d200184e,U-50573,,,,,214.247.88.70
+2026-11-17T16:12:02.975Z,INFO,comportement,page_view,catalog,Home page viewed,200,117.3,,,,S-b6bc36f3,,,,,,185.64.179.210
+2026-11-17T16:12:14.975Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,197.0,,SKU-1008,Sac à dos urbain,S-b6bc36f3,,,,,,185.64.179.210
+2026-11-17T16:13:04.975Z,INFO,comportement,product_view,catalog,Product SKU-1006 viewed,200,140.5,,SKU-1006,Aspirateur robot,S-b6bc36f3,,,,,,185.64.179.210
+2026-11-17T16:13:26.975Z,INFO,comportement,product_view,catalog,Product SKU-1010 viewed,200,163.5,,SKU-1010,Coffret dattes Deglet Nour,S-b6bc36f3,,,,,,185.64.179.210
+2026-11-17T16:14:13.975Z,INFO,comportement,add_to_cart,cart,Product SKU-1010 added to cart (qty 2),201,55.0,,SKU-1010,Coffret dattes Deglet Nour,S-b6bc36f3,,,78.0,TND,,185.64.179.210
+2026-11-17T16:43:47.956Z,INFO,comportement,page_view,catalog,Home page viewed,200,89.7,,,,S-0e4db385,U-27180,,,,,114.128.240.5
+2026-11-17T16:44:58.956Z,INFO,comportement,product_view,catalog,Product SKU-1009 viewed,200,211.1,,SKU-1009,Huile d'olive extra vierge 1 L,S-0e4db385,U-27180,,,,,114.128.240.5
+2026-11-17T16:45:37.956Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,191.5,,SKU-1016,Livre de cuisine tunisienne,S-0e4db385,U-27180,,,,,114.128.240.5
+2026-11-17T17:04:35.975Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 28 min,,,,SKU-1010,Coffret dattes Deglet Nour,S-b6bc36f3,,,78.0,TND,,185.64.179.210
+2026-11-17T18:04:13.512Z,INFO,comportement,page_view,catalog,Home page viewed,200,98.9,,,,S-b1af57b6,,,,,,167.185.81.89
+2026-11-17T18:05:15.512Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,107.6,,SKU-1011,Tapis berbère 160x230,S-b1af57b6,,,,,,167.185.81.89
+2026-11-17T18:05:31.512Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,170.8,,SKU-1008,Sac à dos urbain,S-b1af57b6,,,,,,167.185.81.89
+2026-11-17T18:06:19.512Z,INFO,comportement,product_view,catalog,Product SKU-1006 viewed,200,119.1,,SKU-1006,Aspirateur robot,S-b1af57b6,,,,,,167.185.81.89
+2026-11-17T18:06:57.512Z,INFO,comportement,product_view,catalog,Product SKU-1012 viewed,200,138.7,,SKU-1012,Parfum 100 ml,S-b1af57b6,,,,,,167.185.81.89
+2026-11-17T18:10:06.319Z,WARNING,performance,slow_response,catalog,Slow response on /api/catalog (2.1s),200,2136.2,,,,,,,,,,61.123.244.140
+2026-11-17T18:16:07.532Z,INFO,comportement,page_view,catalog,Home page viewed,200,73.8,,,,S-ed4813b2,U-94268,,,,,196.236.74.31
+2026-11-17T18:16:56.532Z,INFO,comportement,product_view,catalog,Product SKU-1010 viewed,200,138.6,,SKU-1010,Coffret dattes Deglet Nour,S-ed4813b2,U-94268,,,,,196.236.74.31
+2026-11-17T18:42:01.201Z,INFO,comportement,page_view,catalog,Home page viewed,200,64.6,,,,S-da9500c9,U-20013,,,,,63.4.236.153
+2026-11-17T18:43:23.201Z,INFO,comportement,product_view,catalog,Product SKU-1014 viewed,200,119.0,,SKU-1014,Écran 27 pouces,S-da9500c9,U-20013,,,,,63.4.236.153
+2026-11-17T18:43:46.201Z,INFO,comportement,product_view,catalog,Product SKU-1004 viewed,200,185.0,,SKU-1004,Montre connectée Fit 3,S-da9500c9,U-20013,,,,,63.4.236.153
+2026-11-17T18:44:01.201Z,INFO,comportement,add_to_cart,cart,Product SKU-1004 added to cart (qty 1),201,121.7,,SKU-1004,Montre connectée Fit 3,S-da9500c9,U-20013,,329.0,TND,,63.4.236.153
+2026-11-17T18:46:20.201Z,INFO,transaction,checkout_started,checkout,Checkout started,200,131.3,,SKU-1004,Montre connectée Fit 3,S-da9500c9,U-20013,card,329.0,TND,,63.4.236.153
+2026-11-17T18:46:23.201Z,INFO,transaction,payment_success,payment,Payment accepted for order ORD-100004,200,634.1,ORD-100004,SKU-1004,Montre connectée Fit 3,S-da9500c9,U-20013,card,329.0,TND,0.233,63.4.236.153
+2026-11-17T18:46:24.201Z,INFO,transaction,order_created,checkout,Order ORD-100004 created (329.0 TND),201,126.1,ORD-100004,SKU-1004,Montre connectée Fit 3,S-da9500c9,U-20013,card,329.0,TND,,63.4.236.153
+2026-11-17T19:02:17.126Z,INFO,comportement,page_view,catalog,Home page viewed,200,121.0,,,,S-070ce5c5,U-20995,,,,,208.87.25.37
+2026-11-17T19:03:31.126Z,INFO,comportement,product_view,catalog,Product SKU-1005 viewed,200,131.9,,SKU-1005,Machine à café expresso,S-070ce5c5,U-20995,,,,,208.87.25.37
+2026-11-17T19:04:05.126Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,179.4,,SKU-1008,Sac à dos urbain,S-070ce5c5,U-20995,,,,,208.87.25.37
+2026-11-17T19:04:31.126Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,189.1,,SKU-1013,Console de jeux,S-070ce5c5,U-20995,,,,,208.87.25.37
+2026-11-17T19:05:57.126Z,INFO,comportement,product_view,catalog,Product SKU-1001 viewed,200,120.0,,SKU-1001,Smartphone Galaxy A55,S-070ce5c5,U-20995,,,,,208.87.25.37
+2026-11-17T19:40:02.713Z,INFO,comportement,page_view,catalog,Home page viewed,200,151.5,,,,S-c46b0d6b,U-33688,,,,,206.163.39.102
+2026-11-17T19:40:08.346Z,INFO,comportement,page_view,catalog,Home page viewed,200,91.7,,,,S-6169b11b,U-22051,,,,,204.83.125.138
+2026-11-17T19:40:20.713Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,100.2,,SKU-1013,Console de jeux,S-c46b0d6b,U-33688,,,,,206.163.39.102
+2026-11-17T19:40:56.346Z,INFO,comportement,product_view,catalog,Product SKU-1014 viewed,200,204.7,,SKU-1014,Écran 27 pouces,S-6169b11b,U-22051,,,,,204.83.125.138
+2026-11-17T19:41:33.346Z,INFO,comportement,product_view,catalog,Product SKU-1014 viewed,200,83.8,,SKU-1014,Écran 27 pouces,S-6169b11b,U-22051,,,,,204.83.125.138
+2026-11-17T19:42:23.346Z,INFO,comportement,product_view,catalog,Product SKU-1010 viewed,200,126.6,,SKU-1010,Coffret dattes Deglet Nour,S-6169b11b,U-22051,,,,,204.83.125.138
+2026-11-17T19:45:26.371Z,INFO,comportement,page_view,catalog,Home page viewed,200,110.1,,,,S-69a64a79,U-80335,,,,,35.245.140.60
+2026-11-17T19:46:34.371Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,181.8,,SKU-1007,Baskets running,S-69a64a79,U-80335,,,,,35.245.140.60
+2026-11-17T19:52:05.588Z,INFO,comportement,page_view,catalog,Home page viewed,200,92.6,,,,S-56f83149,,,,,,205.214.235.41
+2026-11-17T19:52:46.588Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,157.9,,SKU-1007,Baskets running,S-56f83149,,,,,,205.214.235.41
+2026-11-17T19:53:22.588Z,INFO,comportement,add_to_cart,cart,Product SKU-1007 added to cart (qty 1),201,28.1,,SKU-1007,Baskets running,S-56f83149,,,219.0,TND,,205.214.235.41
+2026-11-17T19:55:48.588Z,INFO,transaction,checkout_started,checkout,Checkout started,200,95.1,,SKU-1007,Baskets running,S-56f83149,,d17,219.0,TND,,205.214.235.41
+2026-11-17T19:55:52.588Z,INFO,transaction,payment_success,payment,Payment accepted for order ORD-100001,200,589.7,ORD-100001,SKU-1007,Baskets running,S-56f83149,,d17,219.0,TND,0.13,205.214.235.41
+2026-11-17T19:55:53.588Z,INFO,transaction,order_created,checkout,Order ORD-100001 created (219.0 TND),201,191.1,ORD-100001,SKU-1007,Baskets running,S-56f83149,,d17,219.0,TND,,205.214.235.41
+2026-11-17T20:26:24.423Z,INFO,comportement,page_view,catalog,Home page viewed,200,100.5,,,,S-eb5b14d7,,,,,,212.195.232.27
+2026-11-17T20:27:42.423Z,INFO,comportement,product_view,catalog,Product SKU-1009 viewed,200,173.8,,SKU-1009,Huile d'olive extra vierge 1 L,S-eb5b14d7,,,,,,212.195.232.27
+2026-11-17T20:28:03.423Z,INFO,comportement,product_view,catalog,Product SKU-1012 viewed,200,132.2,,SKU-1012,Parfum 100 ml,S-eb5b14d7,,,,,,212.195.232.27
+2026-11-17T20:28:19.423Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,107.6,,SKU-1007,Baskets running,S-eb5b14d7,,,,,,212.195.232.27
+2026-11-17T20:28:55.423Z,INFO,comportement,product_view,catalog,Product SKU-1009 viewed,200,109.6,,SKU-1009,Huile d'olive extra vierge 1 L,S-eb5b14d7,,,,,,212.195.232.27
+2026-11-17T20:35:45.264Z,INFO,comportement,page_view,catalog,Home page viewed,200,96.8,,,,S-6781f7bb,,,,,,185.189.201.2
+2026-11-17T20:37:02.264Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,165.5,,SKU-1016,Livre de cuisine tunisienne,S-6781f7bb,,,,,,185.189.201.2
+2026-11-17T21:30:12.223Z,INFO,comportement,page_view,catalog,Home page viewed,200,160.4,,,,S-06d7617b,,,,,,182.222.206.185
+2026-11-17T22:11:00.821Z,INFO,comportement,page_view,catalog,Home page viewed,200,142.8,,,,S-603c5988,,,,,,95.231.4.200
+2026-11-17T22:12:03.821Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,92.1,,SKU-1011,Tapis berbère 160x230,S-603c5988,,,,,,95.231.4.200
+2026-11-17T22:13:24.821Z,INFO,comportement,product_view,catalog,Product SKU-1012 viewed,200,171.9,,SKU-1012,Parfum 100 ml,S-603c5988,,,,,,95.231.4.200
+2026-11-17T22:14:00.821Z,INFO,comportement,product_view,catalog,Product SKU-1006 viewed,200,161.8,,SKU-1006,Aspirateur robot,S-603c5988,,,,,,95.231.4.200
+2026-11-17T22:24:53.022Z,INFO,comportement,page_view,catalog,Home page viewed,200,87.5,,,,S-644fccc7,U-18426,,,,,162.20.96.197
+2026-11-17T22:25:12.022Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,135.6,,SKU-1016,Livre de cuisine tunisienne,S-644fccc7,U-18426,,,,,162.20.96.197
+2026-11-17T22:25:24.022Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,135.0,,SKU-1008,Sac à dos urbain,S-644fccc7,U-18426,,,,,162.20.96.197
+2026-11-17T22:25:38.022Z,INFO,comportement,add_to_cart,cart,Product SKU-1008 added to cart (qty 1),201,78.1,,SKU-1008,Sac à dos urbain,S-644fccc7,U-18426,,89.9,TND,,162.20.96.197
+2026-11-17T23:02:28.022Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 29 min,,,,SKU-1008,Sac à dos urbain,S-644fccc7,U-18426,,89.9,TND,,162.20.96.197
+2026-11-17T23:14:11.039Z,INFO,comportement,page_view,catalog,Home page viewed,200,155.5,,,,S-02f06d89,,,,,,114.128.240.5
+2026-11-17T23:15:21.039Z,INFO,comportement,product_view,catalog,Product SKU-1009 viewed,200,167.3,,SKU-1009,Huile d'olive extra vierge 1 L,S-02f06d89,,,,,,114.128.240.5
+2026-11-17T23:30:20.054Z,INFO,comportement,page_view,catalog,Home page viewed,200,160.6,,,,S-efdf783f,U-14084,,,,,133.53.107.169
+2026-11-17T23:31:43.054Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,180.5,,SKU-1013,Console de jeux,S-efdf783f,U-14084,,,,,133.53.107.169
+2026-11-17T23:32:48.054Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,160.8,,SKU-1007,Baskets running,S-efdf783f,U-14084,,,,,133.53.107.169
+2026-11-18T07:09:20.773Z,INFO,comportement,page_view,catalog,Home page viewed,200,92.6,,,,S-10218df7,U-23299,,,,,213.30.53.3
+2026-11-18T07:10:12.773Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,128.4,,SKU-1011,Tapis berbère 160x230,S-10218df7,U-23299,,,,,213.30.53.3
+2026-11-18T07:11:06.773Z,INFO,comportement,product_view,catalog,Product SKU-1009 viewed,200,180.5,,SKU-1009,Huile d'olive extra vierge 1 L,S-10218df7,U-23299,,,,,213.30.53.3
+2026-11-18T07:12:07.773Z,INFO,comportement,product_view,catalog,Product SKU-1006 viewed,200,180.2,,SKU-1006,Aspirateur robot,S-10218df7,U-23299,,,,,213.30.53.3
+2026-11-18T07:12:30.773Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,217.9,,SKU-1008,Sac à dos urbain,S-10218df7,U-23299,,,,,213.30.53.3
+2026-11-18T08:45:21.756Z,ERROR,erreur,app_error,auth,Token signature verification failed,500,4785.0,,,,,,,,,,147.38.105.171
+2026-11-18T10:40:58.109Z,INFO,comportement,page_view,catalog,Home page viewed,200,133.8,,,,S-eb57018e,U-36136,,,,,211.11.116.204
+2026-11-18T10:41:58.109Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,134.6,,SKU-1013,Console de jeux,S-eb57018e,U-36136,,,,,211.11.116.204
+2026-11-18T10:42:01.230Z,INFO,comportement,page_view,catalog,Home page viewed,200,98.9,,,,S-2439b7fc,U-44025,,,,,204.186.36.75
+2026-11-18T10:43:28.230Z,INFO,comportement,product_view,catalog,Product SKU-1002 viewed,200,89.2,,SKU-1002,Casque Bluetooth X200,S-2439b7fc,U-44025,,,,,204.186.36.75
+2026-11-18T11:06:14.158Z,INFO,comportement,page_view,catalog,Home page viewed,200,90.8,,,,S-6f6f5f63,U-20154,,,,,210.87.1.93
+2026-11-18T11:06:19.158Z,INFO,comportement,product_view,catalog,Product SKU-1002 viewed,200,155.5,,SKU-1002,Casque Bluetooth X200,S-6f6f5f63,U-20154,,,,,210.87.1.93
+2026-11-18T11:25:45.729Z,INFO,comportement,page_view,catalog,Home page viewed,200,114.1,,,,S-70f4b206,U-90377,,,,,182.241.160.157
+2026-11-18T11:25:51.729Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,150.8,,SKU-1011,Tapis berbère 160x230,S-70f4b206,U-90377,,,,,182.241.160.157
+2026-11-18T11:26:58.729Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,164.9,,SKU-1013,Console de jeux,S-70f4b206,U-90377,,,,,182.241.160.157
+2026-11-18T11:40:49.414Z,INFO,comportement,page_view,catalog,Home page viewed,200,182.3,,,,S-1b687812,U-16105,,,,,211.11.116.204
+2026-11-18T11:42:11.414Z,INFO,comportement,product_view,catalog,Product SKU-1003 viewed,200,182.3,,SKU-1003,Ordinateur portable 15 pouces,S-1b687812,U-16105,,,,,211.11.116.204
+2026-11-18T11:43:02.414Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,136.8,,SKU-1011,Tapis berbère 160x230,S-1b687812,U-16105,,,,,211.11.116.204
+2026-11-18T12:10:37.942Z,INFO,comportement,page_view,catalog,Home page viewed,200,104.7,,,,S-b3605200,,,,,,162.234.224.92
+2026-11-18T12:11:17.942Z,INFO,comportement,product_view,catalog,Product SKU-1005 viewed,200,216.2,,SKU-1005,Machine à café expresso,S-b3605200,,,,,,162.234.224.92
+2026-11-18T12:12:06.942Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,139.7,,SKU-1016,Livre de cuisine tunisienne,S-b3605200,,,,,,162.234.224.92
+2026-11-18T13:09:15.993Z,INFO,comportement,page_view,catalog,Home page viewed,200,139.2,,,,S-ed4b82b2,,,,,,30.97.230.254
+2026-11-18T13:09:35.993Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,118.2,,SKU-1011,Tapis berbère 160x230,S-ed4b82b2,,,,,,30.97.230.254
+2026-11-18T13:41:04.984Z,INFO,comportement,page_view,catalog,Home page viewed,200,123.0,,,,S-c01d923c,U-12451,,,,,90.153.13.76
+2026-11-18T13:42:08.984Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,144.2,,SKU-1007,Baskets running,S-c01d923c,U-12451,,,,,90.153.13.76
+2026-11-18T13:42:48.984Z,INFO,comportement,product_view,catalog,Product SKU-1002 viewed,200,177.0,,SKU-1002,Casque Bluetooth X200,S-c01d923c,U-12451,,,,,90.153.13.76
+2026-11-18T13:43:36.984Z,INFO,comportement,product_view,catalog,Product SKU-1001 viewed,200,159.4,,SKU-1001,Smartphone Galaxy A55,S-c01d923c,U-12451,,,,,90.153.13.76
+2026-11-18T13:43:52.984Z,INFO,comportement,product_view,catalog,Product SKU-1005 viewed,200,123.7,,SKU-1005,Machine à café expresso,S-c01d923c,U-12451,,,,,90.153.13.76
+2026-11-18T13:44:47.984Z,INFO,comportement,add_to_cart,cart,Product SKU-1005 added to cart (qty 1),201,106.9,,SKU-1005,Machine à café expresso,S-c01d923c,U-12451,,459.0,TND,,90.153.13.76
+2026-11-18T13:45:47.984Z,INFO,transaction,checkout_started,checkout,Checkout started,200,238.9,,SKU-1005,Machine à café expresso,S-c01d923c,U-12451,d17,459.0,TND,,90.153.13.76
+2026-11-18T13:45:56.984Z,INFO,transaction,payment_success,payment,Payment accepted for order ORD-100005,200,738.5,ORD-100005,SKU-1005,Machine à café expresso,S-c01d923c,U-12451,d17,459.0,TND,0.064,90.153.13.76
+2026-11-18T13:45:57.984Z,INFO,transaction,order_created,checkout,Order ORD-100005 created (459.0 TND),201,149.2,ORD-100005,SKU-1005,Machine à café expresso,S-c01d923c,U-12451,d17,459.0,TND,,90.153.13.76
+2026-11-18T14:03:00.076Z,INFO,comportement,page_view,catalog,Home page viewed,200,107.4,,,,S-5794f5fb,U-43175,,,,,114.128.240.5
+2026-11-18T14:03:55.076Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,141.3,,SKU-1008,Sac à dos urbain,S-5794f5fb,U-43175,,,,,114.128.240.5
+2026-11-18T14:04:27.076Z,INFO,comportement,product_view,catalog,Product SKU-1015 viewed,200,194.2,,SKU-1015,Chargeur rapide USB-C,S-5794f5fb,U-43175,,,,,114.128.240.5
+2026-11-18T14:05:53.076Z,INFO,comportement,product_view,catalog,Product SKU-1003 viewed,200,224.2,,SKU-1003,Ordinateur portable 15 pouces,S-5794f5fb,U-43175,,,,,114.128.240.5
+2026-11-18T14:06:58.076Z,INFO,comportement,product_view,catalog,Product SKU-1007 viewed,200,112.5,,SKU-1007,Baskets running,S-5794f5fb,U-43175,,,,,114.128.240.5
+2026-11-18T14:24:38.789Z,WARNING,securite,login_failed,auth,Failed login for petitmarianne@example.net,401,85.3,,,,,,,,,,45.210.87.23
+2026-11-18T15:43:04.184Z,INFO,comportement,page_view,catalog,Home page viewed,200,129.1,,,,S-a33e690e,U-14084,,,,,202.228.43.6
+2026-11-18T15:44:11.184Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,151.5,,SKU-1016,Livre de cuisine tunisienne,S-a33e690e,U-14084,,,,,202.228.43.6
+2026-11-18T16:12:12.217Z,INFO,comportement,page_view,catalog,Home page viewed,200,89.3,,,,S-59a341c3,U-73114,,,,,132.46.102.178
+2026-11-18T16:12:49.382Z,WARNING,securite,login_failed,auth,Failed login for weisscharlotte@example.org,401,169.9,,,,,,,,,,143.78.134.64
+2026-11-18T16:13:23.217Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,167.6,,SKU-1013,Console de jeux,S-59a341c3,U-73114,,,,,132.46.102.178
+2026-11-18T16:14:15.217Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,127.9,,SKU-1016,Livre de cuisine tunisienne,S-59a341c3,U-73114,,,,,132.46.102.178
+2026-11-18T16:15:07.217Z,INFO,comportement,product_view,catalog,Product SKU-1004 viewed,200,105.7,,SKU-1004,Montre connectée Fit 3,S-59a341c3,U-73114,,,,,132.46.102.178
+2026-11-18T16:15:34.217Z,INFO,comportement,add_to_cart,cart,Product SKU-1004 added to cart (qty 1),201,60.7,,SKU-1004,Montre connectée Fit 3,S-59a341c3,U-73114,,329.0,TND,,132.46.102.178
+2026-11-18T16:36:58.217Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 26 min,,,,SKU-1004,Montre connectée Fit 3,S-59a341c3,U-73114,,329.0,TND,,132.46.102.178
+2026-11-18T16:39:40.087Z,INFO,comportement,page_view,catalog,Home page viewed,200,173.1,,,,S-ea17f1d6,U-18094,,,,,121.66.160.161
+2026-11-18T16:40:02.087Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,118.1,,SKU-1011,Tapis berbère 160x230,S-ea17f1d6,U-18094,,,,,121.66.160.161
+2026-11-18T16:49:50.463Z,INFO,comportement,page_view,catalog,Home page viewed,200,116.9,,,,S-0d9424c3,,,,,,207.48.23.96
+2026-11-18T16:50:02.463Z,INFO,comportement,product_view,catalog,Product SKU-1009 viewed,200,110.8,,SKU-1009,Huile d'olive extra vierge 1 L,S-0d9424c3,,,,,,207.48.23.96
+2026-11-18T16:51:24.463Z,INFO,comportement,product_view,catalog,Product SKU-1011 viewed,200,112.3,,SKU-1011,Tapis berbère 160x230,S-0d9424c3,,,,,,207.48.23.96
+2026-11-18T16:51:48.463Z,INFO,comportement,product_view,catalog,Product SKU-1001 viewed,200,124.1,,SKU-1001,Smartphone Galaxy A55,S-0d9424c3,,,,,,207.48.23.96
+2026-11-18T17:02:28.055Z,INFO,comportement,page_view,catalog,Home page viewed,200,146.7,,,,S-b0e9310f,U-39234,,,,,74.88.150.114
+2026-11-18T17:03:13.055Z,INFO,comportement,product_view,catalog,Product SKU-1006 viewed,200,225.3,,SKU-1006,Aspirateur robot,S-b0e9310f,U-39234,,,,,74.88.150.114
+2026-11-18T17:03:56.055Z,INFO,comportement,product_view,catalog,Product SKU-1015 viewed,200,152.9,,SKU-1015,Chargeur rapide USB-C,S-b0e9310f,U-39234,,,,,74.88.150.114
+2026-11-18T17:20:10.436Z,INFO,comportement,page_view,catalog,Home page viewed,200,118.8,,,,S-bc6e9e19,,,,,,206.193.22.91
+2026-11-18T17:21:12.436Z,INFO,comportement,product_view,catalog,Product SKU-1016 viewed,200,165.6,,SKU-1016,Livre de cuisine tunisienne,S-bc6e9e19,,,,,,206.193.22.91
+2026-11-18T17:21:46.436Z,INFO,comportement,product_view,catalog,Product SKU-1006 viewed,200,178.0,,SKU-1006,Aspirateur robot,S-bc6e9e19,,,,,,206.193.22.91
+2026-11-18T17:22:59.436Z,INFO,comportement,product_view,catalog,Product SKU-1008 viewed,200,180.9,,SKU-1008,Sac à dos urbain,S-bc6e9e19,,,,,,206.193.22.91
+2026-11-18T17:23:41.436Z,INFO,comportement,product_view,catalog,Product SKU-1004 viewed,200,136.8,,SKU-1004,Montre connectée Fit 3,S-bc6e9e19,,,,,,206.193.22.91
+2026-11-18T17:58:25.457Z,INFO,comportement,page_view,catalog,Home page viewed,200,41.3,,,,S-ea7a7c4c,U-94248,,,,,172.165.109.16
+2026-11-18T17:59:40.457Z,INFO,comportement,product_view,catalog,Product SKU-1014 viewed,200,84.2,,SKU-1014,Écran 27 pouces,S-ea7a7c4c,U-94248,,,,,172.165.109.16
+2026-11-18T17:59:55.457Z,INFO,comportement,product_view,catalog,Product SKU-1004 viewed,200,134.1,,SKU-1004,Montre connectée Fit 3,S-ea7a7c4c,U-94248,,,,,172.165.109.16
+2026-11-18T18:01:20.457Z,INFO,comportement,product_view,catalog,Product SKU-1005 viewed,200,129.6,,SKU-1005,Machine à café expresso,S-ea7a7c4c,U-94248,,,,,172.165.109.16
+2026-11-18T18:02:19.457Z,INFO,comportement,product_view,catalog,Product SKU-1001 viewed,200,206.9,,SKU-1001,Smartphone Galaxy A55,S-ea7a7c4c,U-94248,,,,,172.165.109.16
+2026-11-18T18:02:29.457Z,INFO,comportement,add_to_cart,cart,Product SKU-1001 added to cart (qty 3),201,91.0,,SKU-1001,Smartphone Galaxy A55,S-ea7a7c4c,U-94248,,3897.0,TND,,172.165.109.16
+2026-11-18T18:25:46.414Z,INFO,comportement,page_view,catalog,Home page viewed,200,145.7,,,,S-6d4d4973,U-80239,,,,,196.148.16.176
+2026-11-18T18:26:49.414Z,INFO,comportement,product_view,catalog,Product SKU-1012 viewed,200,127.2,,SKU-1012,Parfum 100 ml,S-6d4d4973,U-80239,,,,,196.148.16.176
+2026-11-18T18:27:10.414Z,INFO,comportement,product_view,catalog,Product SKU-1006 viewed,200,197.3,,SKU-1006,Aspirateur robot,S-6d4d4973,U-80239,,,,,196.148.16.176
+2026-11-18T18:27:26.414Z,INFO,comportement,product_view,catalog,Product SKU-1013 viewed,200,154.4,,SKU-1013,Console de jeux,S-6d4d4973,U-80239,,,,,196.148.16.176
+2026-11-18T18:28:35.414Z,INFO,comportement,product_view,catalog,Product SKU-1012 viewed,200,166.4,,SKU-1012,Parfum 100 ml,S-6d4d4973,U-80239,,,,,196.148.16.176
+2026-11-18T18:28:44.414Z,INFO,comportement,add_to_cart,cart,Product SKU-1012 added to cart (qty 1),201,108.3,,SKU-1012,Parfum 100 ml,S-6d4d4973,U-80239,,189.0,TND,,196.148.16.176
+2026-11-18T18:30:46.457Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 28 min,,,,SKU-1001,Smartphone Galaxy A55,S-ea7a7c4c,U-94248,,3897.0,TND,,172.165.109.16
+2026-11-18T19:05:59.169Z,ERROR,erreur,app_error,auth,Token signature verification failed,500,188.5,,,,,,,,,,20.242.23.96
+2026-11-18T19:08:56.724Z,WARNING,performance,slow_response,cart,Slow response on /api/cart (4.3s),200,4335.0,,,,,,,,,,205.132.1.196
+2026-11-18T19:11:39.319Z,INFO,comportement,page_view,catalog,Home page viewed,200,54.0,,,,S-0634b933,U-61993,,,,,202.214.211.62
+2026-11-18T19:11:56.319Z,INFO,comportement,product_view,catalog,Product SKU-1014 viewed,200,165.7,,SKU-1014,Écran 27 pouces,S-0634b933,U-61993,,,,,202.214.211.62
+2026-11-18T19:12:42.319Z,INFO,comportement,add_to_cart,cart,Product SKU-1014 added to cart (qty 1),201,58.1,,SKU-1014,Écran 27 pouces,S-0634b933,U-61993,,799.0,TND,,202.214.211.62
+2026-11-18T19:15:28.751Z,INFO,comportement,page_view,catalog,Home page viewed,200,86.9,,,,S-a72d7f91,,,,,,149.195.112.101
+2026-11-18T19:16:53.751Z,INFO,comportement,product_view,catalog,Product SKU-1010 viewed,200,196.4,,SKU-1010,Coffret dattes Deglet Nour,S-a72d7f91,,,,,,149.195.112.101
+2026-11-18T19:22:13.414Z,WARNING,comportement,cart_abandoned,cart,Cart abandoned after 32 min,,,,SKU-1012,Parfum 100 ml,S-6d4d4973,U-80239,,189.0,TND,,196.148.16.176
+2026-11-18T19:47:20.173Z,INFO,comportement,page_view,catalog,Home page viewed,200,106.3,,,,S-3ed722f6,U-91415,,,,,130.46.166.246

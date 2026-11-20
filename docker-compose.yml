@@ -25,11 +25,15 @@ services:
     container_name: logstash
     environment:
       - xpack.monitoring.enabled=false
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9600:9600"
     volumes:
+      - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./elasticsearch:/usr/share/logstash/templates:ro
       - ./uploads:/data/uploads:ro
+      - logstash-data:/usr/share/logstash/data
     networks: [elk-net]
     depends_on:
       elasticsearch:
@@ -108,6 +112,19 @@ services:
       mongodb:
         condition: service_healthy
 
+  # Outil ponctuel (non démarré par « up ») : génération de logs de test.
+  # Usage : docker compose run --rm generator --count 20000 --days 30
+  generator:
+    image: python:3.11-slim
+    profiles: ["tools"]
+    working_dir: /work
+    volumes:
+      - ./scripts:/work/scripts:ro
+      - ./uploads:/work/uploads
+      - ./data:/work/data
+    entrypoint: ["sh", "-c", "pip install -q --disable-pip-version-check --root-user-action=ignore Faker==30.8.2 && python scripts/generate_logs.py \"$$@\"", "--"]
+    networks: [elk-net]
+
 networks:
   elk-net:
     driver: bridge
@@ -116,3 +133,4 @@ volumes:
   es-data:
   mongo-data:
   redis-data:
+  logstash-data:
