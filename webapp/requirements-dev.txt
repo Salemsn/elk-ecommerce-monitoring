@@ -1,0 +1,3 @@
+pytest==8.3.3
+mongomock==4.2.0.post1
+fakeredis==2.25.1

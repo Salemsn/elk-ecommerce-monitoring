@@ -1,0 +1,1518 @@
+{
+  "info": {
+    "description": "API REST de la plateforme de monitoring des logs e-commerce.\n\n**Authentification** : connectez-vous d'abord avec `POST /api/v1/auth/login` (ou via la page /login) ; le cookie de session est ensuite envoyé automatiquement par Swagger UI. Les routes marquées *admin* exigent le rôle administrateur.",
+    "title": "E-Commerce Log Monitoring API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "403": {
+            "description": "Compte désactivé"
+          },
+          "401": {
+            "description": "Identifiants incorrects"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "summary": "Se connecter (ouvre une session stockée dans Redis)",
+        "tags": [
+          "Authentification"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Se déconnecter",
+        "tags": [
+          "Authentification"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Utilisateur connecté",
+        "tags": [
+          "Authentification"
+        ]
+      }
+    },
+    "/api/v1/logs": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "description": "Recherche plein texte (message, n° de commande, produit…)",
+            "schema": {
+              "type": "string",
+              "example": "timeout"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "description": "Un ou plusieurs niveaux (paramètre répétable)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "DEBUG",
+                  "INFO",
+                  "WARNING",
+                  "ERROR",
+                  "CRITICAL"
+                ]
+              }
+            },
+            "required": false,
+            "explode": true,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "service",
+            "schema": {
+              "type": "string",
+              "example": "payment"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "transaction",
+                "erreur",
+                "comportement",
+                "performance",
+                "securite"
+              ]
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "event_type",
+            "schema": {
+              "type": "string",
+              "example": "payment_failed"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "payment_method",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "file_id",
+            "description": "Logs d'un fichier importé",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "date_from",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-11-01T00:00:00Z"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-11-30T23:59:59Z"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string",
+              "default": "@timestamp",
+              "enum": [
+                "@timestamp",
+                "level",
+                "service",
+                "category",
+                "event_type",
+                "http_status",
+                "response_time_ms",
+                "amount"
+              ]
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "schema": {
+              "type": "string",
+              "default": "desc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Rechercher et filtrer les logs (50 par page, du plus récent au plus ancien)",
+        "description": "Les résultats sont mis en cache 60 s dans Redis. La première page de chaque\nrecherche avec critères est enregistrée dans l'historique (MongoDB).\nUn client ne voit que les catégories autorisées pour son compte (RM16).",
+        "tags": [
+          "Logs"
+        ]
+      }
+    },
+    "/api/v1/logs/export": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "description": "Recherche plein texte (message, n° de commande, produit…)",
+            "schema": {
+              "type": "string",
+              "example": "timeout"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "description": "Un ou plusieurs niveaux (paramètre répétable)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "DEBUG",
+                  "INFO",
+                  "WARNING",
+                  "ERROR",
+                  "CRITICAL"
+                ]
+              }
+            },
+            "required": false,
+            "explode": true,
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "service",
+            "schema": {
+              "type": "string",
+              "example": "payment"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "transaction",
+                "erreur",
+                "comportement",
+                "performance",
+                "securite"
+              ]
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "event_type",
+            "schema": {
+              "type": "string",
+              "example": "payment_failed"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "payment_method",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "file_id",
+            "description": "Logs d'un fichier importé",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "date_from",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-11-01T00:00:00Z"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-11-30T23:59:59Z"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string",
+              "default": "@timestamp",
+              "enum": [
+                "@timestamp",
+                "level",
+                "service",
+                "category",
+                "event_type",
+                "http_status",
+                "response_time_ms",
+                "amount"
+              ]
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "schema": {
+              "type": "string",
+              "default": "desc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "200": {
+            "description": "Fichier CSV (10 000 lignes maximum)"
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Exporter les résultats d'une recherche en CSV",
+        "tags": [
+          "Logs"
+        ]
+      }
+    },
+    "/api/v1/logs/{log_id}": {
+      "get": {
+        "responses": {
+          "404": {
+            "description": "Log introuvable"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Log"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Détail d'un log",
+        "tags": [
+          "Logs"
+        ]
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "log_id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
+    "/api/v1/files": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "processing",
+                "indexed",
+                "failed"
+              ]
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilePage"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Lister les fichiers importés (statut mis à jour à chaque appel)",
+        "tags": [
+          "Fichiers"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "force",
+            "description": "Réimporter un fichier déjà importé",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "413": {
+            "description": "Fichier trop volumineux"
+          },
+          "409": {
+            "description": "Fichier déjà importé"
+          },
+          "400": {
+            "description": "Fichier invalide (extension, structure, champs obligatoires)"
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Upload"
+              }
+            }
+          }
+        },
+        "summary": "Importer un fichier de logs (CSV, JSON ou TXT)",
+        "description": "Le fichier est validé (RM06, RM07), déposé dans le dossier surveillé par Logstash,\net ses métadonnées sont enregistrées dans MongoDB avec le statut « pending ».\nLa réponse contient un aperçu des 10 premières lignes.",
+        "tags": [
+          "Fichiers"
+        ]
+      }
+    },
+    "/api/v1/files/{file_id}": {
+      "get": {
+        "responses": {
+          "404": {
+            "description": "Fichier introuvable"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Détail et statut d'indexation d'un fichier",
+        "tags": [
+          "Fichiers"
+        ]
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "file_id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
+    "/api/v1/stats/summary": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Les 4 indicateurs de la page d'accueil (cache Redis 30 s)",
+        "tags": [
+          "Statistiques"
+        ]
+      }
+    },
+    "/api/v1/stats/timeline": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "interval",
+            "schema": {
+              "type": "string",
+              "default": "day",
+              "enum": [
+                "hour",
+                "day"
+              ]
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 1,
+              "maximum": 365
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Évolution du nombre de logs et d'erreurs (par heure ou par jour)",
+        "tags": [
+          "Statistiques"
+        ]
+      }
+    },
+    "/api/v1/stats/breakdown": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Breakdown"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Répartition par niveau, catégorie et service + Top 10 des erreurs",
+        "tags": [
+          "Statistiques"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Lister les comptes",
+        "tags": [
+          "Utilisateurs"
+        ]
+      },
+      "post": {
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "409": {
+            "description": "E-mail déjà utilisé"
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          }
+        },
+        "summary": "Créer un compte client (RM03)",
+        "tags": [
+          "Utilisateurs"
+        ]
+      }
+    },
+    "/api/v1/users/{user_id}": {
+      "patch": {
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "summary": "Modifier, activer ou désactiver un compte",
+        "tags": [
+          "Utilisateurs"
+        ]
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      ]
+    },
+    "/api/v1/search-history": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/History"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Mes 20 dernières recherches",
+        "tags": [
+          "Historique"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Authentification",
+      "description": "Connexion et session (US01, US09)"
+    },
+    {
+      "name": "Logs",
+      "description": "Recherche, filtres, détail et export des logs (US04, US05, US13)"
+    },
+    {
+      "name": "Fichiers",
+      "description": "Import de fichiers et suivi de l'indexation (US03) — admin"
+    },
+    {
+      "name": "Statistiques",
+      "description": "Indicateurs et agrégations (US06, US07)"
+    },
+    {
+      "name": "Utilisateurs",
+      "description": "Gestion des comptes clients (US02) — admin"
+    },
+    {
+      "name": "Historique",
+      "description": "Historique des recherches de l'utilisateur connecté"
+    }
+  ],
+  "openapi": "3.0.3",
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "Error code"
+          },
+          "status": {
+            "type": "string",
+            "description": "Error name"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "errors": {
+            "type": "object",
+            "description": "Errors",
+            "additionalProperties": {}
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaginationMetadata": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          },
+          "first_page": {
+            "type": "integer"
+          },
+          "last_page": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "previous_page": {
+            "type": "integer"
+          },
+          "next_page": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "admin@ecommerce.tn"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "example": "Admin@2026"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "readOnly": true
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "allowed_categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_login": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Geo": {
+        "type": "object",
+        "properties": {
+          "country_name": {
+            "type": "string"
+          },
+          "city_name": {
+            "type": "string"
+          },
+          "location": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "additionalProperties": false
+      },
+      "Log": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "index": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "level": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "event_type": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "http_status": {
+            "type": "integer"
+          },
+          "response_time_ms": {
+            "type": "number"
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "payment_method": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "fraud_score": {
+            "type": "number"
+          },
+          "client_ip": {
+            "type": "string"
+          },
+          "geo": {
+            "$ref": "#/components/schemas/Geo"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "file_id": {
+            "type": "string"
+          },
+          "source_file": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LogPage": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "took_ms": {
+            "type": "integer"
+          },
+          "cached": {
+            "type": "boolean",
+            "description": "true si le résultat vient du cache Redis"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Log"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "FileSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "readOnly": true
+          },
+          "original_name": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "uploaded_by": {
+            "type": "string"
+          },
+          "uploaded_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "indexed",
+              "failed"
+            ]
+          },
+          "status_message": {
+            "type": "string"
+          },
+          "expected_count": {
+            "type": "integer"
+          },
+          "logs_count": {
+            "type": "integer"
+          },
+          "errors_count": {
+            "type": "integer"
+          },
+          "indexed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FilePage": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileSummary"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Upload": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "description": "Fichier CSV, JSON ou TXT",
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "File": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "readOnly": true
+          },
+          "original_name": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "size_bytes": {
+            "type": "integer"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "uploaded_by": {
+            "type": "string"
+          },
+          "uploaded_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "indexed",
+              "failed"
+            ]
+          },
+          "status_message": {
+            "type": "string"
+          },
+          "expected_count": {
+            "type": "integer"
+          },
+          "logs_count": {
+            "type": "integer"
+          },
+          "errors_count": {
+            "type": "integer"
+          },
+          "indexed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "preview": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Summary": {
+        "type": "object",
+        "properties": {
+          "total_logs": {
+            "type": "integer"
+          },
+          "logs_today": {
+            "type": "integer"
+          },
+          "errors": {
+            "type": "integer"
+          },
+          "files_imported": {
+            "type": "integer"
+          },
+          "cached": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimelinePoint": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "logs": {
+            "type": "integer"
+          },
+          "errors": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Timeline": {
+        "type": "object",
+        "properties": {
+          "interval": {
+            "type": "string"
+          },
+          "cached": {
+            "type": "boolean"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimelinePoint"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Bucket": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Breakdown": {
+        "type": "object",
+        "properties": {
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bucket"
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bucket"
+            }
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bucket"
+            }
+          },
+          "top_errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bucket"
+            }
+          },
+          "cached": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserCreate": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "client@boutique.tn"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 8,
+            "example": "Client@2026"
+          },
+          "full_name": {
+            "type": "string",
+            "default": "",
+            "example": "Boutique Carthage"
+          },
+          "role": {
+            "type": "string",
+            "default": "client",
+            "enum": [
+              "admin",
+              "client"
+            ]
+          },
+          "allowed_categories": {
+            "type": "array",
+            "default": null,
+            "example": [
+              "transaction",
+              "comportement"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "transaction",
+                "erreur",
+                "comportement",
+                "performance",
+                "securite"
+              ]
+            },
+            "nullable": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 8
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "allowed_categories": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "transaction",
+                "erreur",
+                "comportement",
+                "performance",
+                "securite"
+              ]
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "History": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "readOnly": true
+          },
+          "query": {
+            "type": "string"
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "results_count": {
+            "type": "integer"
+          },
+          "executed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "responses": {
+      "UNPROCESSABLE_CONTENT": {
+        "description": "Unprocessable Content",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "DEFAULT_ERROR": {
+        "description": "Default error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

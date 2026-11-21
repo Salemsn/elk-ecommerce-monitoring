@@ -1,11 +1,13 @@
 """Application Flask — E-Commerce Log Monitoring."""
-import os
 import time
 
-import pymongo
-import redis
-from elasticsearch import Elasticsearch
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify
+from flask_session import Session
+
+from .config import Config
+from flask_smorest import Api
+
+from .extensions import build_clients, ensure_indexes, login_manager
 
 
 def _check(fn):
@@ -18,22 +20,49 @@ def _check(fn):
         return {"status": "down", "response_ms": round((time.perf_counter() - start) * 1000, 1), "error": str(exc)[:200]}
 
 
-def create_app():
+def create_app(test_config=None, clients=None):
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "dev")
-    app.config["UPLOAD_FOLDER"] = os.getenv("UPLOAD_FOLDER", "/app/uploads")
-    app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_UPLOAD_MB", "100")) * 1024 * 1024
+    app.config.from_object(Config)
+    if test_config:
+        app.config.update(test_config)
 
-    es = Elasticsearch(os.getenv("ELASTICSEARCH_URL", "http://elasticsearch:9200"), request_timeout=3)
-    mongo = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://mongodb:27017"), serverSelectionTimeoutMS=3000)
-    cache = redis.from_url(os.getenv("REDIS_URL", "redis://redis:6379/0"), socket_timeout=3)
+    clients = clients or build_clients(app.config)
+    app.extensions.update(clients)
 
-    @app.route("/")
-    def index():
-        return render_template("index.html")
+    # Sessions dans Redis (RM01) ; désactivable pour les tests
+    if app.config.get("SESSION_TYPE") == "redis":
+        app.config["SESSION_REDIS"] = clients["redis"]
+        Session(app)
+
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Veuillez vous connecter."
+    login_manager.login_message_category = "info"
+
+    from . import security  # noqa: F401  (gestionnaire 401)
+    from .api.routes import ALL_BLUEPRINTS
+    from .services.users import bootstrap_admin, get_user
+    from .web import auth_bp, web_bp
+
+    login_manager.user_loader(get_user)
+
+    api = Api(app)
+    for blp in ALL_BLUEPRINTS:
+        api.register_blueprint(blp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(web_bp)
+
+    with app.app_context():
+        try:
+            ensure_indexes(clients["db"])
+            if bootstrap_admin(app.config["ADMIN_EMAIL"], app.config["ADMIN_PASSWORD"], app.config["ADMIN_NAME"]):
+                app.logger.warning("Compte administrateur créé : %s (changez le mot de passe)", app.config["ADMIN_EMAIL"])
+        except Exception as exc:  # MongoDB pas encore prêt : l'application démarre quand même
+            app.logger.error("Initialisation MongoDB impossible : %s", exc)
 
     @app.route("/health")
     def health():
+        es, mongo, cache = clients["es"], clients["mongo"], clients["redis"]
         checks = {
             "elasticsearch": _check(lambda: {"cluster_status": es.cluster.health()["status"]}),
             "mongodb": _check(lambda: {"ok": mongo.admin.command("ping")["ok"]}),

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion — LogMonitor</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #F4F6F9;
+           display: flex; min-height: 100vh; }
+    .side { flex: 0 0 40%; background: #14295A; color: #fff; padding: 64px; display: flex;
+            flex-direction: column; justify-content: center; }
+    .side h1 { font-size: 34px; margin: 0 0 12px; }
+    .side p { color: #C9D6EE; line-height: 1.6; }
+    .side li { margin: 8px 0; }
+    .main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .card { background: #fff; border: 1px solid #E3E7ED; border-radius: 10px; padding: 36px; width: 100%;
+            max-width: 420px; }
+    .card h2 { margin: 0 0 4px; } .muted { color: #6B7280; font-size: 14px; }
+    label { display: block; font-weight: 600; font-size: 14px; margin: 18px 0 6px; }
+    input[type=email], input[type=password] { width: 100%; padding: 10px 12px; border: 1px solid #B8C0CC;
+            border-radius: 6px; font-size: 15px; }
+    input:focus { outline: 2px solid #2F80ED; border-color: #2F80ED; }
+    button { margin-top: 22px; width: 100%; padding: 11px; border: 0; border-radius: 6px; background: #2F80ED;
+             color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; }
+    .alert { padding: 10px 12px; border-radius: 6px; margin-top: 16px; font-size: 14px; }
+    .alert-danger { background: #FDECEC; color: #9B1C1C; border: 1px solid #F5B5B5; }
+    .alert-info { background: #EAF2FD; color: #1F3A68; border: 1px solid #B9D3F7; }
+    @media (max-width: 800px) { .side { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="side">
+    <h1>E-Commerce<br>Log Monitor</h1>
+    <p>Centralisez, recherchez et analysez les logs de votre plateforme e-commerce.</p>
+    <ul>
+      <li>Recherche dans les logs en temps réel</li>
+      <li>Tableaux de bord métier</li>
+      <li>Alertes sur les paiements</li>
+    </ul>
+  </div>
+  <div class="main">
+    <form class="card" method="post">
+      <h2>Connexion</h2>
+      <div class="muted">Accédez à votre espace</div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}<div class="alert alert-{{ cat }}">{{ msg }}</div>{% endfor %}
+      {% endwith %}
+      <label for="email">Adresse e-mail</label>
+      <input type="email" id="email" name="email" required autofocus value="{{ request.form.email or '' }}">
+      <label for="password">Mot de passe</label>
+      <input type="password" id="password" name="password" required>
+      <label style="font-weight:normal"><input type="checkbox" name="remember"> Se souvenir de moi</label>
+      <button type="submit">Se connecter</button>
+      <p class="muted" style="margin-top:18px">Les comptes clients sont créés par l'administrateur.</p>
+    </form>
+  </div>
+</body>
+</html>

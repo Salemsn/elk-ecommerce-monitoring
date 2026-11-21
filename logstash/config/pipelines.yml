@@ -1,7 +1,10 @@
-# Deux pipelines indépendants : un par format de fichier.
+# Un pipeline indépendant par format de fichier (CSV, JSON, TXT).
 - pipeline.id: ecommerce-csv
   path.config: "/usr/share/logstash/pipeline/ecommerce-csv.conf"
   pipeline.workers: 1
 - pipeline.id: ecommerce-json
   path.config: "/usr/share/logstash/pipeline/ecommerce-json.conf"
+  pipeline.workers: 1
+- pipeline.id: ecommerce-txt
+  path.config: "/usr/share/logstash/pipeline/ecommerce-txt.conf"
   pipeline.workers: 1

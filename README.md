@@ -78,6 +78,37 @@ les doublons en cas de réimport. Des fichiers d'exemple sont fournis dans `data
 > Sécurité Elasticsearch désactivée volontairement (environnement de développement local).
 > Projet testé avec Docker 20.10 et Docker Compose 2.12.
 
+## Application et API REST
+
+- Connexion : http://localhost:8000/login. Un administrateur est créé au premier démarrage avec
+  `ADMIN_EMAIL` / `ADMIN_PASSWORD` du fichier `.env` (par défaut `admin@ecommerce.tn` / `Admin@2026`,
+  à changer).
+- **Documentation interactive (Swagger UI)** : http://localhost:8000/api/docs. Spécification OpenAPI :
+  http://localhost:8000/api/openapi.json (copie dans `docs/openapi.json`).
+
+| Méthode | Route | Rôle | Description |
+|---|---|---|---|
+| POST | `/api/v1/auth/login`, `/logout` · GET `/me` | tous | Session stockée dans Redis |
+| GET | `/api/v1/logs` | tous | Recherche plein texte + filtres (niveau, service, catégorie, dates), 50 par page, cache Redis 60 s |
+| GET | `/api/v1/logs/{id}`, `/api/v1/logs/export` | tous | Détail d'un log, export CSV |
+| GET / POST | `/api/v1/files`, GET `/api/v1/files/{id}` | admin | Import CSV / JSON / TXT, validation, aperçu, statut d'indexation |
+| GET | `/api/v1/stats/summary`, `/timeline`, `/breakdown` | tous | KPI, évolution, répartition, Top 10 des erreurs |
+| GET / POST / PATCH | `/api/v1/users` | admin | Comptes clients et catégories autorisées |
+| GET | `/api/v1/search-history` | tous | Mes dernières recherches (MongoDB) |
+
+Un client ne voit que les catégories de logs autorisées pour son compte.
+
+Format TXT accepté (une ligne par log) : `2026-11-19T10:42:13Z ERROR [payment] Payment gateway timeout`.
+
+### Tests
+
+```bash
+docker compose exec webapp sh -c "pip install -q -r requirements-dev.txt && python -m pytest -q"
+```
+
+Les tests utilisent des doubles de MongoDB (mongomock), Redis (fakeredis) et Elasticsearch : ils ne
+modifient pas les données réelles.
+
 ## Arrêter
 
 ```bash
