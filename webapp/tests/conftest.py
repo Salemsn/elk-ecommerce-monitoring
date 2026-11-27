@@ -42,6 +42,20 @@ class FakeES:
                 "levels": {"buckets": buckets}, "categories": {"buckets": buckets},
                 "services": {"buckets": buckets},
                 "top_errors": {"messages": {"buckets": [{"key": "Payment gateway timeout after 30s", "doc_count": 3}]}},
+                # indicateurs commerciaux
+                "visits": {"doc_count": 1000, "n": {"value": 1000}},
+                "carts": {"doc_count": 250, "n": {"value": 220}},
+                "checkouts": {"doc_count": 80, "n": {"value": 75}},
+                "abandons": {"doc_count": 170},
+                "pay_ok": {"doc_count": 66, "avg_ms": {"value": 912.4}},
+                "pay_ko": {"doc_count": 6},
+                "orders": {"doc_count": 66, "revenue": {"value": 25000.5}, "basket": {"value": 378.8},
+                           "methods": {"buckets": [{"key": "card", "doc_count": 40}]},
+                           "per_hour": {"buckets": [{"key_as_string": "20", "doc_count": 5},
+                                                    {"key_as_string": "20", "doc_count": 3},
+                                                    {"key_as_string": "09", "doc_count": 2}]},
+                           "per_day": {"buckets": [{"key_as_string": "2026-11-19", "doc_count": 7,
+                                                    "revenue": {"value": 2100.0}}]}},
             }}
         return {"took": 4, "hits": {"total": {"value": len(self.hits)}, "hits": self.hits}}
 

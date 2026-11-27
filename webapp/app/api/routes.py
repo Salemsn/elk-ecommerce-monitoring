@@ -13,7 +13,7 @@ from ..services import search as search_svc
 from ..services import stats as stats_svc
 from ..services import users as users_svc
 from ..services.cache import invalidate
-from .schemas import (BreakdownSchema, FileListQuerySchema, FilePageSchema, FileSchema, HistorySchema,
+from .schemas import (BreakdownSchema, BusinessQuerySchema, BusinessSchema, FileListQuerySchema, FilePageSchema, FileSchema, HistorySchema,
                       LogPageSchema, LogQuerySchema, LogSchema, LoginSchema, SummarySchema, TimelineQuerySchema,
                       TimelineSchema, UploadQuerySchema, UploadSchema, UserCreateSchema, UserSchema,
                       UserUpdateSchema)
@@ -197,6 +197,17 @@ class Breakdown(MethodView):
     def get(self):
         """Répartition par niveau, catégorie et service + Top 10 des erreurs"""
         data, from_cache = stats_svc.breakdown(current_user)
+        return {**data, "cached": from_cache}
+
+
+@stats_blp.route("/business")
+class Business(MethodView):
+    @login_required_api
+    @stats_blp.arguments(BusinessQuerySchema, location="query")
+    @stats_blp.response(200, BusinessSchema)
+    def get(self, params):
+        """Indicateurs commerciaux : conversion, commandes, panier moyen, abandons, paiements (US10, US11, US12)"""
+        data, from_cache = stats_svc.business(current_user, params["days"])
         return {**data, "cached": from_cache}
 
 

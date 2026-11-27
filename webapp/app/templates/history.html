@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Historique{% endblock %}
+{% block content %}
+<div class="mb-3">
+  <div class="lm-crumb">Accueil / Historique</div>
+  <h1 class="lm-page-title">Historique des recherches</h1>
+  <div class="text-muted small">Vos 20 dernières recherches (enregistrées dans MongoDB). Cliquez sur « Relancer » pour les refaire.</div>
+</div>
+<div class="lm-card p-0">
+  <div class="table-responsive"><table class="table lm-table table-hover mb-0">
+    <thead><tr><th>Date</th><th>Recherche</th><th>Filtres</th><th>Résultats</th><th class="text-end">Action</th></tr></thead>
+    <tbody id="history"><tr><td colspan="5" class="lm-empty">Chargement…</td></tr></tbody>
+  </table></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function relaunchUrl(h) {
+  const p = new URLSearchParams();
+  if (h.query) p.set("q", h.query);
+  for (const [k, v] of Object.entries(h.filters || {})) {
+    if (Array.isArray(v)) v.forEach(x => p.append(k, x)); else p.set(k, v);
+  }
+  return "/logs?" + p.toString();
+}
+function filterChips(f) {
+  const chips = [];
+  for (const [k, v] of Object.entries(f || {})) {
+    if (k === "date_from" || k === "date_to") chips.push(`${k === "date_from" ? "du" : "au"} ${LM.date(v, false)}`);
+    else chips.push(`${k} : ${Array.isArray(v) ? v.join(", ") : v}`);
+  }
+  return chips.map(c => `<span class="chip">${LM.esc(c)}</span>`).join("") || '<span class="text-muted">—</span>';
+}
+LM.api("/api/v1/search-history").then(rows => {
+  document.getElementById("history").innerHTML = rows.length ? rows.map(h => `
+    <tr>
+      <td class="text-nowrap">${LM.date(h.executed_at)}</td>
+      <td>${h.query ? `<b>« ${LM.esc(h.query)} »</b>` : '<span class="text-muted">(filtres seulement)</span>'}</td>
+      <td>${filterChips(h.filters)}</td>
+      <td>${LM.num(h.results_count)}</td>
+      <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="${relaunchUrl(h)}"><i class="bi bi-arrow-repeat"></i> Relancer</a></td>
+    </tr>`).join("") : '<tr><td colspan="5" class="lm-empty"><i class="bi bi-clock-history fs-3 d-block mb-2"></i>Aucune recherche pour l\'instant.</td></tr>';
+}).catch(e => LM.toast(e.message, "danger"));
+</script>
+{% endblock %}

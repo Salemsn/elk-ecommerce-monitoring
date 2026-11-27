@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LogMonitor{% endblock %} — E-Commerce Log Monitor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+{% set nav = [
+    ('web.index', 'bi-grid-1x2', 'Tableau de bord', None),
+    ('web.logs', 'bi-list-ul', 'Logs', None),
+    ('web.history', 'bi-clock-history', 'Historique', None),
+] %}
+{% set admin_nav = [
+    ('web.import_page', 'bi-cloud-arrow-up', 'Importation', None),
+    ('web.users', 'bi-people', 'Utilisateurs', None),
+] %}
+<aside class="lm-sidebar">
+  <a class="lm-brand" href="{{ url_for('web.index') }}">
+    <span class="bars"><span style="height:14px"></span><span style="height:22px"></span><span style="height:30px"></span></span>
+    <span>E-Commerce<br>Log Monitor</span>
+  </a>
+  <ul class="lm-nav">
+    {% for endpoint, icon, label, _ in nav %}
+      <li><a href="{{ url_for(endpoint) }}" class="{{ 'active' if request.endpoint == endpoint }}"><i class="bi {{ icon }}"></i>{{ label }}</a></li>
+    {% endfor %}
+    {% if current_user.is_admin %}
+      <li class="section">Administration</li>
+      {% for endpoint, icon, label, _ in admin_nav %}
+        <li><a href="{{ url_for(endpoint) }}" class="{{ 'active' if request.endpoint == endpoint }}"><i class="bi {{ icon }}"></i>{{ label }}</a></li>
+      {% endfor %}
+      <li><a class="disabled" href="#"><i class="bi bi-bell"></i>Alertes<span class="soon">Sprint 6</span></a></li>
+    {% endif %}
+    <li class="section">Outils</li>
+    <li><a href="http://localhost:5601" target="_blank" rel="noopener"><i class="bi bi-bar-chart-line"></i>Kibana<i class="bi bi-box-arrow-up-right ms-auto small"></i></a></li>
+    {% if current_user.is_admin %}
+      <li><a href="/api/docs" target="_blank"><i class="bi bi-braces"></i>API (Swagger)<i class="bi bi-box-arrow-up-right ms-auto small"></i></a></li>
+    {% endif %}
+  </ul>
+  <div class="lm-user">
+    <div class="lm-avatar">{{ (current_user.full_name or current_user.email)[:1] | upper }}</div>
+    <div class="flex-grow-1 overflow-hidden">
+      <div class="name text-truncate">{{ current_user.full_name or current_user.email }}</div>
+      <div class="role">{{ 'Administrateur' if current_user.is_admin else 'Client' }}</div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="text-white-50" title="Déconnexion"><i class="bi bi-box-arrow-right fs-5"></i></a>
+  </div>
+</aside>
+
+<div class="lm-main">
+  <header class="lm-topbar">
+    <button class="lm-burger" type="button" aria-label="Menu"><i class="bi bi-list"></i></button>
+    <form action="{{ url_for('web.logs') }}" class="position-relative" role="search">
+      <i class="bi bi-search search-icon"></i>
+      <input class="form-control" type="search" name="q" placeholder="Rechercher dans les logs… (ex. timeout, ORD-100307)">
+    </form>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <span class="text-muted small d-none d-md-inline"><i class="bi bi-globe2"></i> Heure locale</span>
+      <span class="badge text-bg-light border">{{ current_user.email }}</span>
+    </div>
+  </header>
+
+  <main class="lm-content">
+    <div id="lm-alerts">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }} alert-dismissible fade show">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        {% endfor %}
+      {% endwith %}
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="lm-footer">Plateforme de monitoring e-commerce · Flask · Elasticsearch · Logstash · Kibana · MongoDB · Redis · © 2026</footer>
+</div>
+
+<script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -574,6 +574,50 @@
         ]
       }
     },
+    "/api/v1/stats/business": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "days",
+            "description": "Période : 7, 30, 90 ou 365 derniers jours",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "enum": [
+                7,
+                30,
+                90,
+                365
+              ]
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "422": {
+            "$ref": "#/components/responses/UNPROCESSABLE_CONTENT"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Business"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/DEFAULT_ERROR"
+          }
+        },
+        "summary": "Indicateurs commerciaux : conversion, commandes, panier moyen, abandons, paiements (US10, US11, US12)",
+        "tags": [
+          "Statistiques"
+        ]
+      }
+    },
     "/api/v1/users": {
       "get": {
         "responses": {
@@ -1216,6 +1260,75 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Bucket"
+            }
+          },
+          "cached": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Business": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "integer"
+          },
+          "visits": {
+            "type": "integer",
+            "description": "Sessions ayant vu au moins une page"
+          },
+          "orders": {
+            "type": "integer"
+          },
+          "revenue": {
+            "type": "number",
+            "description": "Chiffre d'affaires (TND)"
+          },
+          "conversion_rate": {
+            "type": "number",
+            "description": "Commandes / visites (%)"
+          },
+          "average_basket": {
+            "type": "number",
+            "description": "Panier moyen (TND)"
+          },
+          "cart_abandonment_rate": {
+            "type": "number",
+            "description": "Paniers abandonnés / ajouts au panier (%)"
+          },
+          "payment_failure_rate": {
+            "type": "number"
+          },
+          "avg_payment_ms": {
+            "type": "integer",
+            "description": "Temps moyen de traitement d'un paiement (ms)"
+          },
+          "orders_by_hour": {
+            "type": "array",
+            "description": "Commandes par heure de la journée (0 à 23 h)",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "orders_by_day": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "payment_methods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bucket"
+            }
+          },
+          "funnel": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
             }
           },
           "cached": {

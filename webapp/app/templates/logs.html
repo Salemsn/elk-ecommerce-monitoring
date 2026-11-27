@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}Logs{% endblock %}
+{% block content %}
+<div class="mb-3">
+  <div class="lm-crumb">Accueil / Logs</div>
+  <h1 class="lm-page-title">Rechercher dans les logs</h1>
+  <div class="text-muted small">Recherche plein texte et filtres (niveau, service, catégorie, période){% if not current_user.is_admin %} — catégories autorisées pour votre compte : {{ categories | join(', ') }}{% endif %}</div>
+</div>
+
+<form id="search-form" class="lm-card mb-3" autocomplete="off">
+  <div class="input-group input-group-lg mb-3">
+    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+    <input type="search" class="form-control" name="q" id="q" placeholder='ex. timeout, ORD-100307, "payment failed"'>
+    <button class="btn btn-primary px-4" type="submit"><span class="spinner-border spinner-border-sm lm-spinner me-1"></span>Rechercher</button>
+  </div>
+
+  <div class="row g-3 align-items-end">
+    <div class="col-lg-5">
+      <label class="form-label fw-semibold small mb-1">Niveau</label>
+      <div class="d-flex flex-nowrap gap-2">
+        {% for lv in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] %}
+          <div class="form-check"><input class="form-check-input" type="checkbox" name="level" value="{{ lv }}" id="lv-{{ lv }}">
+            <label class="form-check-label" for="lv-{{ lv }}"><span class="lv lv-{{ lv }}">{{ lv }}</span></label></div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-sm-4 col-lg-2">
+      <label class="form-label fw-semibold small mb-1" for="service">Service</label>
+      <select class="form-select" name="service" id="service"><option value="">Tous</option></select>
+    </div>
+    <div class="col-sm-4 col-lg-2">
+      <label class="form-label fw-semibold small mb-1" for="category">Catégorie</label>
+      <select class="form-select" name="category" id="category"><option value="">Toutes</option>
+        {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}</select>
+    </div>
+    <div class="col-sm-4 col-lg-3">
+      <label class="form-label fw-semibold small mb-1" for="event_type">Type d'événement</label>
+      <select class="form-select" name="event_type" id="event_type"><option value="">Tous</option>
+        {% for e in ['page_view','product_view','add_to_cart','cart_abandoned','checkout_started','payment_success','payment_failed','order_created','refund_issued','fraud_suspected','login_failed','app_error','slow_response','log_line','parse_error'] %}
+          <option value="{{ e }}">{{ e }}</option>{% endfor %}</select>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <label class="form-label fw-semibold small mb-1" for="date_from">Du</label>
+      <input type="datetime-local" class="form-control" id="date_from">
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <label class="form-label fw-semibold small mb-1" for="date_to">Au</label>
+      <input type="datetime-local" class="form-control" id="date_to">
+    </div>
+    <div class="col-lg-4">
+      <span class="small text-muted me-1">Raccourcis :</span>
+      {% for h, label in [(1, '1 h'), (24, '24 h'), (168, '7 j'), (720, '30 j')] %}
+        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" data-hours="{{ h }}">{{ label }}</button>
+      {% endfor %}
+    </div>
+    <div class="col-lg-2 text-lg-end">
+      <button type="button" class="btn btn-outline-secondary" id="reset"><i class="bi bi-arrow-counterclockwise"></i> Réinitialiser</button>
+    </div>
+  </div>
+  <input type="hidden" name="file_id" id="file_id">
+</form>
+
+<div class="lm-card p-0">
+  <div class="d-flex flex-wrap align-items-center gap-2 px-3 py-2 border-bottom">
+    <div id="chips" class="me-2"></div>
+    <div class="text-muted small" id="summary">&nbsp;</div>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <select class="form-select form-select-sm" id="size" style="width:auto"><option>20</option><option selected>50</option><option>100</option></select>
+      <a class="btn btn-sm btn-success" id="export" href="#"><i class="bi bi-download"></i> Export CSV</a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table lm-table table-hover mb-0">
+      <thead><tr>
+        <th class="sortable" data-sort="@timestamp">Date / heure <i class="bi"></i></th>
+        <th class="sortable" data-sort="level">Niveau <i class="bi"></i></th>
+        <th class="sortable" data-sort="service">Service <i class="bi"></i></th>
+        <th class="sortable" data-sort="category">Catégorie <i class="bi"></i></th>
+        <th>Message</th><th class="text-end">Actions</th>
+      </tr></thead>
+      <tbody id="results"><tr><td colspan="6" class="lm-empty">Chargement…</td></tr></tbody>
+    </table>
+  </div>
+  <div class="d-flex flex-wrap justify-content-between align-items-center px-3 py-2 border-top">
+    <div class="small text-muted" id="range">&nbsp;</div>
+    <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+  </div>
+</div>
+
+<!-- Détail d'un log -->
+<div class="modal fade" id="detail" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Détail du log</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="detail-body"></div>
+  </div></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const form = document.getElementById("search-form");
+const state = { page: 1, sort: "@timestamp", order: "desc" };
+const detailModal = new bootstrap.Modal(document.getElementById("detail"));
+
+const toLocalInput = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+/** Paramètres de recherche à partir du formulaire. */
+function params(extra = {}) {
+  const p = new URLSearchParams();
+  const q = form.q.value.trim(); if (q) p.set("q", q);
+  form.querySelectorAll("input[name=level]:checked").forEach(c => p.append("level", c.value));
+  for (const f of ["service", "category", "event_type", "file_id"]) if (form[f].value) p.set(f, form[f].value);
+  const from = document.getElementById("date_from").value, to = document.getElementById("date_to").value;
+  if (from) p.set("date_from", new Date(from).toISOString());
+  if (to) p.set("date_to", new Date(to).toISOString());
+  p.set("sort", state.sort); p.set("order", state.order);
+  for (const [k, v] of Object.entries(extra)) p.set(k, v);
+  return p;
+}
+
+/** Remplit le formulaire depuis l'adresse (liens de l'historique, du tableau de bord…). */
+function fromUrl() {
+  const u = new URLSearchParams(location.search);
+  form.q.value = u.get("q") || "";
+  form.querySelectorAll("input[name=level]").forEach(c => c.checked = u.getAll("level").includes(c.value));
+  for (const f of ["service", "category", "event_type", "file_id"]) {
+    if (u.get(f) && form[f].tagName === "SELECT" && ![...form[f].options].some(o => o.value === u.get(f)))
+      form[f].add(new Option(u.get(f), u.get(f)));
+    form[f].value = u.get(f) || "";
+  }
+  document.getElementById("date_from").value = u.get("date_from") ? toLocalInput(new Date(u.get("date_from"))) : "";
+  document.getElementById("date_to").value = u.get("date_to") ? toLocalInput(new Date(u.get("date_to"))) : "";
+  state.page = Number(u.get("page") || 1);
+  state.sort = u.get("sort") || "@timestamp"; state.order = u.get("order") || "desc";
+}
+
+function renderChips() {
+  const u = params(); const chips = [];
+  if (u.get("q")) chips.push(`« ${u.get("q")} »`);
+  u.getAll("level").forEach(l => chips.push(l));
+  for (const f of ["service", "category", "event_type"]) if (u.get(f)) chips.push(`${f} : ${u.get(f)}`);
+  if (u.get("file_id")) chips.push("fichier " + u.get("file_id").slice(-6));
+  if (u.get("date_from") || u.get("date_to")) chips.push(`${LM.date(u.get("date_from"), false)} → ${LM.date(u.get("date_to"), false)}`);
+  document.getElementById("chips").innerHTML = chips.map(c => `<span class="chip">${LM.esc(c)}</span>`).join("");
+}
+
+async function search(push = true) {
+  const size = Number(document.getElementById("size").value);
+  const p = params({ page: state.page, size });
+  if (push) history.replaceState(null, "", "/logs?" + p.toString());
+  document.getElementById("export").href = "/api/v1/logs?" + params({ format: "csv" }).toString();
+  form.classList.add("loading");
+  renderChips();
+  document.querySelectorAll("th.sortable").forEach(th => {
+    th.querySelector("i").className = "bi " + (th.dataset.sort === state.sort ? (state.order === "desc" ? "bi-caret-down-fill" : "bi-caret-up-fill") : "");
+  });
+  try {
+    const r = await LM.api("/api/v1/logs?" + p.toString());
+    const tbody = document.getElementById("results");
+    tbody.innerHTML = r.results.length ? r.results.map(l => `
+      <tr>
+        <td class="text-nowrap">${LM.date(l.timestamp)}</td>
+        <td>${LM.level(l.level)}</td>
+        <td>${LM.esc(l.service || "—")}</td>
+        <td><span class="chip">${LM.esc(l.category || "—")}</span></td>
+        <td class="msg" title="${LM.esc(l.message)}">${LM.esc(l.message)}</td>
+        <td class="text-end"><button class="btn btn-sm btn-outline-primary" data-id="${LM.esc(l.id)}"><i class="bi bi-eye"></i> Détails</button></td>
+      </tr>`).join("") : '<tr><td colspan="6" class="lm-empty"><i class="bi bi-search fs-3 d-block mb-2"></i>Aucun log ne correspond à ces critères.</td></tr>';
+    const start = r.total ? (r.page - 1) * r.size + 1 : 0, end = Math.min(r.page * r.size, r.total);
+    document.getElementById("summary").innerHTML = `<b>${LM.num(r.total)}</b> résultat(s) · ${r.took_ms} ms${r.cached ? ' · <span title="Résultat servi par le cache Redis"><i class="bi bi-lightning-charge-fill text-warning"></i> cache</span>' : ""}`;
+    document.getElementById("range").textContent = r.total ? `Affichage de ${LM.num(start)} à ${LM.num(end)} sur ${LM.num(r.total)}${r.total > 10000 ? " (navigation limitée aux 10 000 premiers)" : ""}` : "";
+    renderPagination(r.page, r.pages);
+  } catch (e) {
+    LM.toast(e.message, "danger");
+  } finally {
+    form.classList.remove("loading");
+  }
+}
+
+function renderPagination(page, pages) {
+  const items = [];
+  const add = (p, label, disabled = false, active = false) => items.push(
+    `<li class="page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}"><a class="page-link" href="#" data-page="${p}">${label}</a></li>`);
+  add(page - 1, "‹", page <= 1);
+  const pagesToShow = new Set([1, pages, page - 1, page, page + 1].filter(p => p >= 1 && p <= pages));
+  let last = 0;
+  [...pagesToShow].sort((a, b) => a - b).forEach(p => {
+    if (p - last > 1) items.push('<li class="page-item disabled"><span class="page-link">…</span></li>');
+    add(p, p, false, p === page); last = p;
+  });
+  add(page + 1, "›", page >= pages);
+  document.getElementById("pagination").innerHTML = items.join("");
+}
+
+async function showDetail(id) {
+  document.getElementById("detail-body").innerHTML = '<div class="lm-empty">Chargement…</div>';
+  detailModal.show();
+  try {
+    const l = await LM.api("/api/v1/logs/" + encodeURIComponent(id));
+    const rows = [
+      ["Date", LM.date(l.timestamp)], ["Niveau", LM.level(l.level)], ["Service", LM.esc(l.service)],
+      ["Catégorie", LM.esc(l.category)], ["Type d'événement", LM.esc(l.event_type)], ["Message", LM.esc(l.message)],
+      ["Code HTTP", LM.esc(l.http_status)], ["Temps de réponse", l.response_time_ms != null ? LM.num(l.response_time_ms, 1) + " ms" : "—"],
+      ["Commande", LM.esc(l.order_id)], ["Produit", LM.esc([l.product_id, l.product_name].filter(Boolean).join(" — "))],
+      ["Paiement", LM.esc(l.payment_method)], ["Montant", l.amount != null ? LM.num(l.amount, 2) + " " + LM.esc(l.currency || "") : "—"],
+      ["Score de fraude", LM.esc(l.fraud_score)], ["Session / utilisateur", LM.esc([l.session_id, l.user_id].filter(Boolean).join(" / "))],
+      ["Adresse IP", LM.esc(l.client_ip) + (l.geo && l.geo.country_name ? ` <span class="text-muted">(${LM.esc([l.geo.city_name, l.geo.country_name].filter(Boolean).join(", "))})</span>` : "")],
+      ["Tags", (l.tags || []).map(t => `<span class="chip">${LM.esc(t)}</span>`).join("")],
+      ["Fichier d'origine", LM.esc(l.source_file)], ["Index", `<span class="mono">${LM.esc(l.index)}</span>`],
+      ["Identifiant", `<span class="mono small">${LM.esc(l.id)}</span>`],
+    ].filter(([, v]) => v && v !== "undefined" && v !== "");
+    document.getElementById("detail-body").innerHTML =
+      `<table class="table table-sm mb-3">${rows.map(([k, v]) => `<tr><th class="text-muted fw-normal" style="width:190px">${k}</th><td>${v}</td></tr>`).join("")}</table>
+       <details><summary class="small text-muted">Document JSON complet</summary><pre class="mono bg-light p-2 rounded mt-2">${LM.esc(JSON.stringify(l, null, 2))}</pre></details>`;
+  } catch (e) {
+    document.getElementById("detail-body").innerHTML = `<div class="alert alert-danger">${LM.esc(e.message)}</div>`;
+  }
+}
+
+// ---------- événements ----------
+form.addEventListener("submit", e => { e.preventDefault(); state.page = 1; search(); });
+form.addEventListener("change", e => { if (e.target.matches("input[type=checkbox], select")) { state.page = 1; search(); } });
+document.getElementById("size").addEventListener("change", () => { state.page = 1; search(); });
+document.getElementById("reset").addEventListener("click", () => {
+  form.reset(); form.file_id.value = ""; document.getElementById("date_from").value = ""; document.getElementById("date_to").value = "";
+  state.page = 1; state.sort = "@timestamp"; state.order = "desc"; search();
+});
+document.querySelectorAll("[data-hours]").forEach(b => b.addEventListener("click", () => {
+  const now = new Date();
+  document.getElementById("date_from").value = toLocalInput(new Date(now - b.dataset.hours * 3600000));
+  document.getElementById("date_to").value = toLocalInput(now);
+  state.page = 1; search();
+}));
+document.getElementById("pagination").addEventListener("click", e => {
+  const a = e.target.closest("[data-page]"); if (!a) return;
+  e.preventDefault(); state.page = Number(a.dataset.page); search(); window.scrollTo({ top: 0, behavior: "smooth" });
+});
+document.querySelectorAll("th.sortable").forEach(th => th.addEventListener("click", () => {
+  if (state.sort === th.dataset.sort) state.order = state.order === "desc" ? "asc" : "desc";
+  else { state.sort = th.dataset.sort; state.order = "desc"; }
+  state.page = 1; search();
+}));
+document.getElementById("results").addEventListener("click", e => {
+  const b = e.target.closest("[data-id]"); if (b) showDetail(b.dataset.id);
+});
+
+// Liste des services à partir des statistiques
+LM.api("/api/v1/stats/breakdown").then(b => {
+  const sel = document.getElementById("service");
+  b.services.forEach(s => { if (![...sel.options].some(o => o.value === s.key)) sel.add(new Option(s.key, s.key)); });
+  const wanted = new URLSearchParams(location.search).get("service"); if (wanted) sel.value = wanted;
+}).catch(() => {});
+
+fromUrl();
+search(false);
+</script>
+{% endblock %}

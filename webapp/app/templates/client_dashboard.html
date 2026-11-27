@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Mon tableau de bord{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+  <div>
+    <div class="lm-crumb">Espace client</div>
+    <h1 class="lm-page-title">Mon tableau de bord commercial</h1>
+    <div class="text-muted small">Indicateurs calculés à partir des logs autorisés pour votre compte (RM15, RM16)</div>
+  </div>
+  <select class="form-select" id="days" style="width:auto">
+    <option value="7">7 derniers jours</option><option value="30" selected>30 derniers jours</option>
+    <option value="90">90 derniers jours</option><option value="365">12 derniers mois</option>
+  </select>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#27AE60"><i class="bi bi-graph-up-arrow icon"></i>
+    <div class="label">Taux de conversion</div><div class="value" id="k-conv">—</div><div class="hint" id="k-visits">&nbsp;</div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#2F80ED"><i class="bi bi-bag-check icon"></i>
+    <div class="label">Commandes</div><div class="value" id="k-orders">—</div><div class="hint" id="k-revenue">&nbsp;</div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#F2994A"><i class="bi bi-basket icon"></i>
+    <div class="label">Panier moyen</div><div class="value" id="k-basket">—</div><div class="hint" id="k-pay">&nbsp;</div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#EB5757"><i class="bi bi-cart-x icon"></i>
+    <div class="label">Taux d'abandon de panier</div><div class="value" id="k-abandon">—</div><div class="hint" id="k-fail">&nbsp;</div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-xl-8"><div class="lm-card h-100">
+    <h2 class="card-title">Transactions par heure de la journée</h2>
+    <div class="chart-box"><canvas id="by-hour"></canvas></div>
+  </div></div>
+  <div class="col-xl-4"><div class="lm-card h-100">
+    <h2 class="card-title">Moyens de paiement</h2>
+    <div class="chart-box"><canvas id="methods"></canvas></div>
+  </div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-7"><div class="lm-card h-100">
+    <h2 class="card-title">Commandes et chiffre d'affaires par jour</h2>
+    <div class="chart-box"><canvas id="by-day"></canvas></div>
+  </div></div>
+  <div class="col-xl-5"><div class="lm-card h-100">
+    <h2 class="card-title">Entonnoir de vente <span class="text-muted fw-normal small">(sessions)</span></h2>
+    <div id="funnel"></div>
+    <div class="small text-muted mt-3"><i class="bi bi-info-circle"></i> Les abandons de panier sont détaillés dans <a href="/logs?event_type=cart_abandoned">les logs « cart_abandoned »</a>.</div>
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const charts = {};
+function draw(id, config) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id), config); }
+const labelMethod = { card: "Carte bancaire", cash_on_delivery: "Paiement à la livraison", d17: "D17 (mobile)", paypal: "PayPal" };
+
+async function load() {
+  const days = document.getElementById("days").value;
+  const b = await LM.api("/api/v1/stats/business?days=" + days);
+  document.getElementById("k-conv").textContent = LM.num(b.conversion_rate, 1) + " %";
+  document.getElementById("k-visits").textContent = LM.num(b.visits) + " visites";
+  document.getElementById("k-orders").textContent = LM.num(b.orders);
+  document.getElementById("k-revenue").textContent = LM.num(b.revenue, 0) + " TND de chiffre d'affaires";
+  document.getElementById("k-basket").textContent = LM.num(b.average_basket, 2) + " TND";
+  document.getElementById("k-pay").textContent = "Paiement traité en " + LM.num(b.avg_payment_ms / 1000, 1) + " s en moyenne";
+  document.getElementById("k-abandon").textContent = LM.num(b.cart_abandonment_rate, 1) + " %";
+  document.getElementById("k-fail").textContent = LM.num(b.payment_failure_rate, 1) + " % de paiements échoués";
+
+  draw("by-hour", { type: "bar",
+    data: { labels: [...Array(24).keys()].map(h => h + " h"),
+            datasets: [{ label: "Commandes", data: b.orders_by_hour, backgroundColor: LM.colors.accent, borderRadius: 4 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
+
+  draw("methods", { type: "doughnut",
+    data: { labels: b.payment_methods.map(m => labelMethod[m.key] || m.key),
+            datasets: [{ data: b.payment_methods.map(m => m.count), backgroundColor: LM.colors.palette }] },
+    options: { maintainAspectRatio: false, cutout: "60%", plugins: { legend: { position: "bottom" } } } });
+
+  draw("by-day", { type: "bar",
+    data: { labels: b.orders_by_day.map(d => new Date(d.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })),
+            datasets: [
+              { type: "bar", label: "Commandes", data: b.orders_by_day.map(d => d.orders), backgroundColor: "rgba(47,128,237,.75)", borderRadius: 3 },
+              { type: "line", label: "Chiffre d'affaires (TND)", data: b.orders_by_day.map(d => d.revenue), borderColor: LM.colors.ok,
+                backgroundColor: LM.colors.ok, tension: .3, pointRadius: 0, yAxisID: "y1" }] },
+    options: { maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+               scales: { y: { beginAtZero: true }, y1: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false } } } } });
+
+  const top = b.funnel[0].sessions || 1;
+  const colors = [LM.colors.muted, LM.colors.accent, LM.colors.warn, LM.colors.ok];
+  document.getElementById("funnel").innerHTML = b.funnel.map((s, i) => {
+    const pct = 100 * s.sessions / top;
+    return `<div class="mb-3"><div class="d-flex justify-content-between small mb-1"><span>${LM.esc(s.step)}</span>
+      <span><b>${LM.num(s.sessions)}</b> · ${LM.num(pct, 1)} %</span></div>
+      <div class="progress" style="height:14px"><div class="progress-bar" style="width:${Math.max(pct, 1)}%;background:${colors[i]}"></div></div></div>`;
+  }).join("");
+}
+document.getElementById("days").addEventListener("change", () => load().catch(e => LM.toast(e.message, "danger")));
+load().catch(e => LM.toast(e.message, "danger"));
+</script>
+{% endblock %}

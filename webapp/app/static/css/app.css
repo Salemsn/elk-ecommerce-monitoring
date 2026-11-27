@@ -1,0 +1,111 @@
+/* LogMonitor — design system (voir docs/maquettes/Design_System.png) */
+:root {
+  --lm-navy: #14295A;
+  --lm-navy-2: #1F3A68;
+  --lm-accent: #2F80ED;
+  --lm-ok: #27AE60;
+  --lm-warn: #F2994A;
+  --lm-danger: #EB5757;
+  --lm-critical: #9B1C1C;
+  --lm-bg: #F4F6F9;
+  --lm-border: #E3E7ED;
+  --lm-muted: #6B7280;
+  --lm-sidebar: 240px;
+}
+
+body { background: var(--lm-bg); color: #111; font-size: .93rem; }
+a { color: var(--lm-accent); }
+
+/* ---------- Menu latéral ---------- */
+.lm-sidebar {
+  position: fixed; inset: 0 auto 0 0; width: var(--lm-sidebar); background: var(--lm-navy);
+  color: #C9D6EE; display: flex; flex-direction: column; z-index: 1040; transition: transform .2s;
+}
+.lm-brand { display: flex; align-items: center; gap: .7rem; padding: 1.2rem 1.2rem 1.4rem; color: #fff;
+  text-decoration: none; font-weight: 700; line-height: 1.15; }
+.lm-brand:hover { color: #fff; }
+.lm-brand .bars { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
+.lm-brand .bars span { width: 7px; background: var(--lm-accent); border-radius: 2px; }
+.lm-nav { list-style: none; padding: 0 .75rem; margin: 0; flex: 1; overflow-y: auto; }
+.lm-nav .section { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #7F93BC;
+  padding: 1rem .75rem .35rem; }
+.lm-nav a { display: flex; align-items: center; gap: .75rem; padding: .6rem .75rem; border-radius: 8px;
+  color: #C9D6EE; text-decoration: none; margin-bottom: 2px; }
+.lm-nav a:hover { background: rgba(255,255,255,.07); color: #fff; }
+.lm-nav a.active { background: var(--lm-accent); color: #fff; font-weight: 600; }
+.lm-nav a.disabled { opacity: .45; pointer-events: none; }
+.lm-nav i { font-size: 1.05rem; width: 1.2rem; text-align: center; }
+.lm-nav .soon { margin-left: auto; font-size: .62rem; background: rgba(255,255,255,.12); padding: .1rem .4rem;
+  border-radius: 6px; }
+.lm-user { border-top: 1px solid rgba(255,255,255,.1); padding: 1rem 1.2rem; display: flex; gap: .7rem;
+  align-items: center; }
+.lm-avatar { width: 36px; height: 36px; border-radius: 50%; background: #C9D6EE; color: var(--lm-navy);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; flex: 0 0 36px; }
+.lm-user .name { color: #fff; font-weight: 600; font-size: .88rem; line-height: 1.2; }
+.lm-user .role { font-size: .75rem; }
+
+/* ---------- Zone principale ---------- */
+.lm-main { margin-left: var(--lm-sidebar); min-height: 100vh; display: flex; flex-direction: column; }
+.lm-topbar { background: #fff; border-bottom: 1px solid var(--lm-border); height: 60px; display: flex;
+  align-items: center; gap: 1rem; padding: 0 1.5rem; position: sticky; top: 0; z-index: 1030; }
+.lm-topbar form { flex: 0 1 460px; }
+.lm-topbar .form-control { background: var(--lm-bg); border: 0; border-radius: 20px; padding-left: 2.4rem; }
+.lm-topbar .search-icon { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); color: var(--lm-muted); }
+.lm-content { padding: 1.5rem; flex: 1; }
+.lm-footer { padding: .8rem 1.5rem; color: var(--lm-muted); font-size: .8rem; border-top: 1px solid var(--lm-border);
+  background: #fff; text-align: center; }
+.lm-page-title { font-size: 1.45rem; font-weight: 700; margin: 0; }
+.lm-crumb { font-size: .78rem; color: var(--lm-muted); margin-bottom: .2rem; }
+
+/* ---------- Cartes ---------- */
+.lm-card { background: #fff; border: 1px solid var(--lm-border); border-radius: 10px; padding: 1.1rem 1.2rem; }
+.lm-card h2, .lm-card .card-title { font-size: .98rem; font-weight: 700; margin-bottom: .9rem; }
+.lm-kpi { position: relative; overflow: hidden; padding-left: 1.4rem; }
+.lm-kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--kpi, var(--lm-accent)); }
+.lm-kpi .label { color: var(--lm-muted); font-size: .8rem; }
+.lm-kpi .value { font-size: 1.75rem; font-weight: 700; line-height: 1.2; margin: .2rem 0; }
+.lm-kpi .hint { font-size: .75rem; color: var(--kpi, var(--lm-accent)); }
+.lm-kpi .icon { position: absolute; right: 1rem; top: 1rem; font-size: 1.5rem; color: var(--kpi, var(--lm-accent)); opacity: .25; }
+
+/* ---------- Niveaux et statuts ---------- */
+.lv { display: inline-block; padding: .15rem .55rem; border-radius: 10px; font-size: .72rem; font-weight: 700;
+  color: #fff; letter-spacing: .02em; }
+.lv-DEBUG { background: var(--lm-muted); } .lv-INFO { background: var(--lm-accent); }
+.lv-WARNING { background: var(--lm-warn); } .lv-ERROR { background: var(--lm-danger); }
+.lv-CRITICAL { background: var(--lm-critical); }
+.st { display: inline-block; padding: .15rem .55rem; border-radius: 10px; font-size: .72rem; font-weight: 700; color: #fff; }
+.st-pending { background: var(--lm-muted); } .st-processing { background: var(--lm-warn); }
+.st-indexed { background: var(--lm-ok); } .st-failed { background: var(--lm-danger); }
+
+/* ---------- Tableaux ---------- */
+.lm-table { margin: 0; }
+.lm-table thead th { background: var(--lm-bg); font-size: .78rem; text-transform: uppercase; letter-spacing: .03em;
+  color: #444; border-bottom: 1px solid var(--lm-border); white-space: nowrap; }
+.lm-table td { vertical-align: middle; }
+.lm-table .msg { max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lm-table th.sortable { cursor: pointer; } .lm-table th.sortable:hover { color: var(--lm-accent); }
+.mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .82rem; }
+
+/* ---------- Import ---------- */
+.lm-drop { border: 2px dashed var(--lm-accent); background: #F5F9FF; border-radius: 12px; padding: 2.2rem 1rem;
+  text-align: center; cursor: pointer; transition: background .15s; }
+.lm-drop.dragover { background: #E3EEFD; }
+.lm-drop i { font-size: 2.4rem; color: var(--lm-accent); }
+
+/* ---------- Divers ---------- */
+.chip { display: inline-block; background: #EEF4FE; color: var(--lm-navy-2); border-radius: 12px; padding: .1rem .55rem;
+  font-size: .75rem; margin: 0 .25rem .2rem 0; }
+.lm-spinner { display: none; } .loading .lm-spinner { display: inline-block; }
+.lm-empty { text-align: center; color: var(--lm-muted); padding: 2.5rem 1rem; }
+.chart-box { position: relative; height: 270px; }
+.lm-404 { text-align: center; padding: 5rem 1rem; } .lm-404 .code { font-size: 5rem; font-weight: 800; color: var(--lm-accent); }
+
+/* ---------- Responsive ---------- */
+.lm-burger { display: none; border: 0; background: none; font-size: 1.4rem; }
+@media (max-width: 991.98px) {
+  .lm-sidebar { transform: translateX(-100%); }
+  body.sidebar-open .lm-sidebar { transform: none; box-shadow: 0 0 40px rgba(0,0,0,.3); }
+  .lm-main { margin-left: 0; }
+  .lm-burger { display: inline-block; }
+  .lm-topbar form { display: none; }
+}

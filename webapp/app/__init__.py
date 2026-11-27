@@ -42,11 +42,12 @@ def create_app(test_config=None, clients=None):
     from . import security  # noqa: F401  (gestionnaire 401)
     from .api.routes import ALL_BLUEPRINTS
     from .services.users import bootstrap_admin, get_user
-    from .web import auth_bp, web_bp
+    from .web import auth_bp, register_error_pages, web_bp
 
     login_manager.user_loader(get_user)
 
     api = Api(app)
+    app.extensions["lm_api"] = api
     sections = app.config.get("API_DOCS_SECTIONS", "all")
     documented = None if sections.strip().lower() == "all" else {s.strip() for s in sections.split(",")}
     for blp in ALL_BLUEPRINTS:
@@ -56,6 +57,7 @@ def create_app(test_config=None, clients=None):
             app.register_blueprint(blp)   # route active, absente de la documentation
     app.register_blueprint(auth_bp)
     app.register_blueprint(web_bp)
+    register_error_pages(app)
 
     with app.app_context():
         try:

@@ -206,3 +206,25 @@ class BreakdownSchema(Schema):
     services = fields.List(fields.Nested(BucketSchema))
     top_errors = fields.List(fields.Nested(BucketSchema))
     cached = fields.Bool()
+
+
+class BusinessQuerySchema(Schema):
+    days = fields.Int(load_default=30, validate=validate.OneOf([7, 30, 90, 365]),
+                      metadata={"description": "Période : 7, 30, 90 ou 365 derniers jours"})
+
+
+class BusinessSchema(Schema):
+    days = fields.Int()
+    visits = fields.Int(metadata={"description": "Sessions ayant vu au moins une page"})
+    orders = fields.Int()
+    revenue = fields.Float(metadata={"description": "Chiffre d'affaires (TND)"})
+    conversion_rate = fields.Float(metadata={"description": "Commandes / visites (%)"})
+    average_basket = fields.Float(metadata={"description": "Panier moyen (TND)"})
+    cart_abandonment_rate = fields.Float(metadata={"description": "Paniers abandonnés / ajouts au panier (%)"})
+    payment_failure_rate = fields.Float()
+    avg_payment_ms = fields.Int(metadata={"description": "Temps moyen de traitement d'un paiement (ms)"})
+    orders_by_hour = fields.List(fields.Int(), metadata={"description": "Commandes par heure de la journée (0 à 23 h)"})
+    orders_by_day = fields.List(fields.Dict())
+    payment_methods = fields.List(fields.Nested(BucketSchema))
+    funnel = fields.List(fields.Dict())
+    cached = fields.Bool()

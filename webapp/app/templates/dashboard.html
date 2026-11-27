@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+  <div>
+    <div class="lm-crumb">Accueil</div>
+    <h1 class="lm-page-title">Tableau de bord</h1>
+    <div class="text-muted small">Vue d'ensemble de l'activité — <span id="updated">chargement…</span></div>
+  </div>
+  <div class="btn-group" role="group" aria-label="Période du graphique">
+    <button class="btn btn-outline-primary btn-sm" data-period="1">24 h</button>
+    <button class="btn btn-outline-primary btn-sm" data-period="7">7 jours</button>
+    <button class="btn btn-outline-primary btn-sm active" data-period="30">30 jours</button>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#2F80ED"><i class="bi bi-database icon"></i>
+    <div class="label">Logs indexés</div><div class="value" id="k-total">—</div><div class="hint">Tous les fichiers confondus</div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#27AE60"><i class="bi bi-calendar-check icon"></i>
+    <div class="label">Logs aujourd'hui</div><div class="value" id="k-today">—</div><div class="hint">Depuis minuit</div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#EB5757"><i class="bi bi-exclamation-octagon icon"></i>
+    <div class="label">Erreurs (ERROR / CRITICAL)</div><div class="value" id="k-errors">—</div><div class="hint" id="k-errors-rate">&nbsp;</div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="lm-card lm-kpi" style="--kpi:#F2994A"><i class="bi bi-file-earmark-arrow-up icon"></i>
+    <div class="label">Fichiers importés</div><div class="value" id="k-files">—</div><div class="hint"><a href="{{ url_for('web.import_page') }}">Importer un fichier</a></div></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-xl-8"><div class="lm-card h-100">
+    <h2 class="card-title">Évolution des logs <span class="text-muted fw-normal small" id="chart-period">(30 derniers jours)</span></h2>
+    <div class="chart-box"><canvas id="timeline"></canvas></div>
+  </div></div>
+  <div class="col-xl-4"><div class="lm-card h-100">
+    <h2 class="card-title">Répartition par niveau</h2>
+    <div class="chart-box"><canvas id="levels"></canvas></div>
+  </div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-8"><div class="lm-card h-100">
+    <div class="d-flex justify-content-between align-items-center"><h2 class="card-title">Derniers logs</h2>
+      <a class="small" href="{{ url_for('web.logs') }}">Voir tous les logs <i class="bi bi-arrow-right"></i></a></div>
+    <div class="table-responsive"><table class="table lm-table table-hover">
+      <thead><tr><th>Date / heure</th><th>Niveau</th><th>Service</th><th>Message</th></tr></thead>
+      <tbody id="latest"><tr><td colspan="4" class="lm-empty">Chargement…</td></tr></tbody>
+    </table></div>
+  </div></div>
+  <div class="col-xl-4"><div class="lm-card h-100">
+    <h2 class="card-title">Top 5 des erreurs</h2>
+    <ol class="list-group list-group-numbered list-group-flush" id="top-errors"><li class="list-group-item text-muted">Chargement…</li></ol>
+  </div></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let timelineChart;
+
+async function loadKpis() {
+  const s = await LM.api("/api/v1/stats/summary");
+  document.getElementById("k-total").textContent = LM.num(s.total_logs);
+  document.getElementById("k-today").textContent = LM.num(s.logs_today);
+  document.getElementById("k-errors").textContent = LM.num(s.errors);
+  document.getElementById("k-errors-rate").textContent = s.total_logs ? LM.num(100 * s.errors / s.total_logs, 1) + " % des logs" : "";
+  document.getElementById("k-files").textContent = LM.num(s.files_imported);
+  document.getElementById("updated").textContent = "mis à jour à " + new Date().toLocaleTimeString("fr-FR");
+}
+
+async function loadTimeline(days) {
+  const hourly = days === 1;
+  const t = await LM.api(`/api/v1/stats/timeline?interval=${hourly ? "hour" : "day"}&days=${days}`);
+  const labels = t.points.map(p => {
+    const d = new Date(p.date);
+    return hourly ? d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+                  : d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+  });
+  const data = {
+    labels,
+    datasets: [
+      { label: "Tous les logs", data: t.points.map(p => p.logs), borderColor: LM.colors.accent,
+        backgroundColor: "rgba(47,128,237,.12)", fill: true, tension: .3, pointRadius: 0 },
+      { label: "Erreurs", data: t.points.map(p => p.errors), borderColor: LM.colors.danger,
+        backgroundColor: LM.colors.danger, tension: .3, pointRadius: 2, yAxisID: "y1" },
+    ],
+  };
+  if (timelineChart) timelineChart.destroy();
+  timelineChart = new Chart(document.getElementById("timeline"), {
+    type: "line", data,
+    options: { maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+      scales: { y: { beginAtZero: true, title: { display: true, text: "Logs" } },
+                y1: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Erreurs" } } } },
+  });
+  document.getElementById("chart-period").textContent = hourly ? "(dernières 24 h)" : `(${days} derniers jours)`;
+}
+
+async function loadBreakdown() {
+  const b = await LM.api("/api/v1/stats/breakdown");
+  const order = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"];
+  const lv = order.map(k => (b.levels.find(x => x.key === k) || { count: 0 }).count);
+  new Chart(document.getElementById("levels"), {
+    type: "doughnut",
+    data: { labels: order, datasets: [{ data: lv, backgroundColor: order.map(k => LM.levelColor[k]) }] },
+    options: { maintainAspectRatio: false, cutout: "62%", plugins: { legend: { position: "right" } } },
+  });
+  const top = b.top_errors.slice(0, 5);
+  document.getElementById("top-errors").innerHTML = top.length ? top.map(e =>
+    `<li class="list-group-item d-flex justify-content-between align-items-start gap-2">
+       <a class="me-auto text-truncate text-decoration-none" href="/logs?q=${encodeURIComponent('"' + e.key + '"')}&level=ERROR&level=CRITICAL">${LM.esc(e.key)}</a>
+       <span class="badge text-bg-danger rounded-pill">${LM.num(e.count)}</span></li>`).join("")
+    : '<li class="list-group-item text-muted">Aucune erreur</li>';
+}
+
+async function loadLatest() {
+  const r = await LM.api("/api/v1/logs?size=8");
+  document.getElementById("latest").innerHTML = r.results.length ? r.results.map(l =>
+    `<tr><td class="text-nowrap">${LM.date(l.timestamp)}</td><td>${LM.level(l.level)}</td>
+       <td>${LM.esc(l.service)}</td><td class="msg" title="${LM.esc(l.message)}">${LM.esc(l.message)}</td></tr>`).join("")
+    : '<tr><td colspan="4" class="lm-empty">Aucun log</td></tr>';
+}
+
+document.querySelectorAll("[data-period]").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll("[data-period]").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  loadTimeline(Number(btn.dataset.period));
+}));
+
+Promise.all([loadKpis(), loadTimeline(30), loadBreakdown(), loadLatest()])
+  .catch(e => LM.toast("Impossible de charger le tableau de bord : " + e.message, "danger"));
+setInterval(() => loadKpis().catch(() => {}), 60000);
+</script>
+{% endblock %}

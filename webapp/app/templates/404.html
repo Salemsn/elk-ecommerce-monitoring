@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ code }} — LogMonitor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <div class="lm-404">
+    <div class="code">{{ code }}</div>
+    <h1 class="h4">{{ title }}</h1>
+    <p class="text-muted">{{ message }}</p>
+    <a class="btn btn-primary" href="/"><i class="bi bi-house"></i> Retour au tableau de bord</a>
+  </div>
+</body>
+</html>

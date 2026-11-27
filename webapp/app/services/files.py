@@ -11,6 +11,7 @@ import json
 import os
 import re
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -169,8 +170,11 @@ def save_upload(storage, user, force=False):
     sha = hashlib.sha256(raw).hexdigest()
     previous = db().files.find_one({"sha256": sha})
     if previous and not force:
+        when = previous["uploaded_at"]
+        when = (when.replace(tzinfo=timezone.utc) if when.tzinfo is None else when).astimezone(
+            ZoneInfo(current_app.config["TIMEZONE"]))
         raise FileValidationError(
-            f"Ce fichier a déjà été importé le {previous['uploaded_at']:%d/%m/%Y à %H:%M} "
+            f"Ce fichier a déjà été importé le {when:%d/%m/%Y à %H:%M} "
             f"(« {previous['original_name']} »). Ajoutez force=true pour le réimporter : "
             "les logs déjà présents ne seront pas dupliqués (RM11).", status=409)
 

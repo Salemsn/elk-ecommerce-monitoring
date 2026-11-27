@@ -115,16 +115,38 @@ def export_logs(params, user, limit=MAX_WINDOW):
     return [_format_hit(h) for h in res["hits"]["hits"]]
 
 
+def _iso(value):
+    """Dates des filtres stockées en texte ISO (UTC), lisibles par l'interface."""
+    if isinstance(value, datetime):
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    return value
+
+
 def save_history(user, params, results_count):
     keep = ("level", "service", "category", "event_type", "payment_method", "date_from", "date_to")
-    db().search_history.insert_one({
+    entry = {
         "user_id": user.id,
         "query": params.get("q", ""),
-        "filters": {k: params[k] for k in keep if params.get(k)},
-        "results_count": results_count,
-        "executed_at": datetime.now(timezone.utc),
-    })
+        "filters": {k: _iso(params[k]) for k in keep if params.get(k)},
+    }
+    now = datetime.now(timezone.utc)
+    # Même recherche relancée dans les 5 dernières minutes : on met à jour la ligne au lieu d'en créer une autre
+    last = db().search_history.find_one({"user_id": user.id}, sort=[("executed_at", -1)])
+    if last and last.get("query") == entry["query"] and last.get("filters") == entry["filters"]:
+        executed = last["executed_at"]
+        if executed.tzinfo is None:
+            executed = executed.replace(tzinfo=timezone.utc)
+        if (now - executed).total_seconds() < 300:
+            db().search_history.update_one({"_id": last["_id"]},
+                                           {"$set": {"executed_at": now, "results_count": results_count}})
+            return
+    db().search_history.insert_one({**entry, "results_count": results_count, "executed_at": now})
 
 
 def list_history(user, limit=20):
-    return list(db().search_history.find({"user_id": user.id}).sort("executed_at", -1).limit(limit))
+    rows = list(db().search_history.find({"user_id": user.id}).sort("executed_at", -1).limit(limit))
+    for row in rows:  # anciennes entrées : dates enregistrées en objets datetime
+        row["filters"] = {k: _iso(v) for k, v in (row.get("filters") or {}).items()}
+    return rows

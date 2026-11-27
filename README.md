@@ -93,10 +93,24 @@ les doublons en cas de réimport. Des fichiers d'exemple sont fournis dans `data
 | GET | `/api/v1/logs/{id}` | tous | Détail d'un log |
 | GET / POST | `/api/v1/files`, GET `/api/v1/files/{id}` | admin | Import CSV / JSON / TXT, validation, aperçu, statut d'indexation |
 | GET | `/api/v1/stats/summary`, `/timeline`, `/breakdown` | tous | KPI, évolution, répartition, Top 10 des erreurs |
+| GET | `/api/v1/stats/business?days=7\|30\|90\|365` | tous | Indicateurs commerciaux : conversion, panier moyen, abandon, paiements, entonnoir |
 | GET / POST / PATCH | `/api/v1/users` | admin | Comptes clients et catégories autorisées |
 | GET | `/api/v1/search-history` | tous | Mes dernières recherches (MongoDB) |
 
 Un client ne voit que les catégories de logs autorisées pour son compte.
+
+### Interface web (Sprint 5)
+
+| Page | Accès | Contenu |
+|---|---|---|
+| `/` | admin | Tableau de bord : 4 KPI, évolution 24 h / 7 j / 30 j, répartition par niveau, Top 5 des erreurs, derniers logs |
+| `/` | client | Tableau de bord commercial : conversion, commandes, panier moyen, abandon, transactions par heure, moyens de paiement, entonnoir |
+| `/logs` | tous | Recherche avec filtres, tri, pagination, détail d'un log, export CSV |
+| `/historique` | tous | 20 dernières recherches, bouton « Relancer » |
+| `/import` | admin | Glisser-déposer, barre de progression, aperçu, liste des fichiers et statut |
+| `/utilisateurs` | admin | Création des clients, catégories autorisées, activation |
+
+Bootstrap 5, Bootstrap Icons et Chart.js sont inclus dans `webapp/app/static/vendor/` : l'interface fonctionne sans Internet.
 
 Format TXT accepté (une ligne par log) : `2026-11-19T10:42:13Z ERROR [payment] Payment gateway timeout`.
 

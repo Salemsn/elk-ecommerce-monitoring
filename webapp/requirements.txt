@@ -8,3 +8,4 @@ Flask-Login==0.6.3
 Flask-Session==0.8.0
 flask-smorest==0.44.0
 marshmallow==3.22.0
+tzdata==2024.2

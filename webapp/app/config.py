@@ -12,6 +12,9 @@ class Config:
     MONGO_DB = os.getenv("MONGO_DB", "log_monitoring")
     REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 
+    # Fuseau horaire d'affichage (dates stockées en UTC)
+    TIMEZONE = os.getenv("APP_TIMEZONE", "Africa/Tunis")
+
     # Import de fichiers (RM05, RM06)
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "/app/uploads")
     MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "100"))

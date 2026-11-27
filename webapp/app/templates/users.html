@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Utilisateurs{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+  <div>
+    <div class="lm-crumb">Accueil / Administration / Utilisateurs</div>
+    <h1 class="lm-page-title">Comptes utilisateurs</h1>
+    <div class="text-muted small">Créez les comptes clients et choisissez les catégories de logs qu'ils peuvent consulter (RM03, RM04, RM16).</div>
+  </div>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#user-modal" id="new-user"><i class="bi bi-person-plus"></i> Nouveau client</button>
+</div>
+<div class="lm-card p-0">
+  <div class="table-responsive"><table class="table lm-table table-hover mb-0">
+    <thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Catégories autorisées</th><th>Dernière connexion</th><th>État</th><th class="text-end">Actions</th></tr></thead>
+    <tbody id="users"><tr><td colspan="7" class="lm-empty">Chargement…</td></tr></tbody>
+  </table></div>
+</div>
+
+<div class="modal fade" id="user-modal" tabindex="-1">
+  <div class="modal-dialog"><form class="modal-content" id="user-form">
+    <div class="modal-header"><h5 class="modal-title" id="um-title">Nouveau client</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <input type="hidden" name="id">
+      <div class="mb-3"><label class="form-label">Nom</label><input class="form-control" name="full_name" placeholder="Boutique Carthage"></div>
+      <div class="mb-3"><label class="form-label">E-mail</label><input class="form-control" type="email" name="email" required></div>
+      <div class="mb-3"><label class="form-label" id="pw-label">Mot de passe</label><input class="form-control" type="password" name="password" minlength="8" placeholder="8 caractères minimum"></div>
+      <label class="form-label">Catégories autorisées</label>
+      <div class="d-flex flex-wrap gap-3">
+        {% for c in categories %}<div class="form-check"><input class="form-check-input" type="checkbox" name="cat" value="{{ c }}" id="cat-{{ c }}" {{ 'checked' if c in ['transaction', 'comportement'] }}>
+          <label class="form-check-label" for="cat-{{ c }}">{{ c }}</label></div>{% endfor %}
+      </div>
+      <div id="um-error" class="mt-3"></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button><button class="btn btn-primary" type="submit">Enregistrer</button></div>
+  </form></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("user-modal"));
+const uform = document.getElementById("user-form");
+let users = [];
+const me = "{{ current_user.id }}";
+
+async function load() {
+  users = await LM.api("/api/v1/users");
+  document.getElementById("users").innerHTML = users.map(u => `
+    <tr class="${u.is_active ? "" : "text-muted"}">
+      <td class="fw-semibold">${LM.esc(u.full_name || "—")}</td>
+      <td>${LM.esc(u.email)}</td>
+      <td>${u.role === "admin" ? '<span class="badge text-bg-dark">Admin</span>' : '<span class="badge text-bg-primary">Client</span>'}</td>
+      <td>${u.role === "admin" ? '<span class="text-muted small">toutes</span>' : (u.allowed_categories || []).map(c => `<span class="chip">${LM.esc(c)}</span>`).join("")}</td>
+      <td class="text-nowrap">${LM.date(u.last_login, false)}</td>
+      <td>${u.is_active ? '<span class="st st-indexed">Actif</span>' : '<span class="st st-pending">Désactivé</span>'}</td>
+      <td class="text-end text-nowrap">${u.role === "admin" ? "" : `
+        <button class="btn btn-sm btn-outline-primary" data-edit="${u.id}"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm ${u.is_active ? "btn-outline-danger" : "btn-outline-success"}" data-toggle="${u.id}" data-active="${u.is_active}">
+          ${u.is_active ? '<i class="bi bi-slash-circle"></i> Désactiver' : '<i class="bi bi-check-circle"></i> Activer'}</button>`}</td>
+    </tr>`).join("");
+}
+
+document.getElementById("new-user").addEventListener("click", () => {
+  uform.reset(); uform.id.value = ""; uform.email.disabled = false;
+  document.getElementById("um-title").textContent = "Nouveau client";
+  document.getElementById("pw-label").textContent = "Mot de passe";
+  document.getElementById("um-error").innerHTML = "";
+});
+
+document.getElementById("users").addEventListener("click", async e => {
+  const edit = e.target.closest("[data-edit]"), tog = e.target.closest("[data-toggle]");
+  if (edit) {
+    const u = users.find(x => x.id === edit.dataset.edit);
+    uform.reset(); uform.id.value = u.id; uform.full_name.value = u.full_name || ""; uform.email.value = u.email; uform.email.disabled = true;
+    uform.querySelectorAll("[name=cat]").forEach(c => c.checked = (u.allowed_categories || []).includes(c.value));
+    document.getElementById("um-title").textContent = "Modifier " + u.email;
+    document.getElementById("pw-label").textContent = "Nouveau mot de passe (laisser vide pour ne pas changer)";
+    document.getElementById("um-error").innerHTML = "";
+    modal.show();
+  }
+  if (tog) {
+    const active = tog.dataset.active === "true";
+    try {
+      await LM.api("/api/v1/users/" + tog.dataset.toggle, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ is_active: !active }) });
+      LM.toast(active ? "Compte désactivé." : "Compte réactivé.");
+      load();
+    } catch (err) { LM.toast(err.message, "danger"); }
+  }
+});
+
+uform.addEventListener("submit", async e => {
+  e.preventDefault();
+  const cats = [...uform.querySelectorAll("[name=cat]:checked")].map(c => c.value);
+  const id = uform.id.value;
+  const body = { full_name: uform.full_name.value, allowed_categories: cats };
+  if (uform.password.value) body.password = uform.password.value;
+  if (!id) Object.assign(body, { email: uform.email.value, role: "client" });
+  try {
+    await LM.api("/api/v1/users" + (id ? "/" + id : ""), { method: id ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    modal.hide(); LM.toast(id ? "Compte mis à jour." : "Compte client créé."); load();
+  } catch (err) {
+    const fields = err.body && err.body.errors && err.body.errors.json;
+    const detail = fields ? Object.entries(fields).map(([k, v]) => `${k} : ${[].concat(v).join(" ")}`).join("<br>") : "";
+    document.getElementById("um-error").innerHTML = `<div class="alert alert-danger mb-0">${LM.esc(err.message)}${detail ? "<br><small>" + detail + "</small>" : ""}</div>`;
+  }
+});
+load().catch(e => LM.toast(e.message, "danger"));
+</script>
+{% endblock %}
