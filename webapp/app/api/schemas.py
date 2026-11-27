@@ -69,6 +69,9 @@ class LogQuerySchema(Schema):
     size = fields.Int(load_default=50, validate=validate.Range(min=1, max=100))
     sort = fields.Str(load_default="@timestamp", validate=validate.OneOf(SORTABLE))
     order = fields.Str(load_default="desc", validate=validate.OneOf(["asc", "desc"]))
+    format = fields.Str(load_default="json", validate=validate.OneOf(["json", "csv"]),
+                        metadata={"description": "json : résultats paginés ; csv : téléchargement des résultats "
+                                                 "(10 000 lignes max, page et size ignorés)"})
 
 
 class GeoSchema(Schema):

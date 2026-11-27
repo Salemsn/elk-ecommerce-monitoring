@@ -23,7 +23,8 @@ PREFIX = "/api/v1"
 auth_blp = Blueprint("Authentification", __name__, url_prefix=f"{PREFIX}/auth",
                      description="Connexion et session (US01, US09)")
 logs_blp = Blueprint("Logs", __name__, url_prefix=f"{PREFIX}/logs",
-                     description="Recherche, filtres, détail et export des logs (US04, US05, US13)")
+                     description="Recherche, filtres, détail et export CSV des logs (US04, US05, US13)")
+
 files_blp = Blueprint("Fichiers", __name__, url_prefix=f"{PREFIX}/files",
                       description="Import de fichiers et suivi de l'indexation (US03) — admin")
 stats_blp = Blueprint("Statistiques", __name__, url_prefix=f"{PREFIX}/stats",
@@ -71,42 +72,41 @@ class Me(MethodView):
 
 
 # =============================== Logs ===============================
+CSV_COLUMNS = ["timestamp", "level", "category", "event_type", "service", "message", "http_status",
+               "response_time_ms", "order_id", "product_id", "product_name", "payment_method", "amount",
+               "currency", "client_ip", "session_id", "user_id"]
+
+
+def _csv_response(rows):
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=CSV_COLUMNS, extrasaction="ignore")
+    writer.writeheader()
+    writer.writerows(rows)
+    return Response("\ufeff" + buf.getvalue(), mimetype="text/csv",
+                    headers={"Content-Disposition": "attachment; filename=logs_export.csv"})
+
+
 @logs_blp.route("")
 class Logs(MethodView):
     @login_required_api
     @logs_blp.arguments(LogQuerySchema, location="query")
     @logs_blp.response(200, LogPageSchema)
     def get(self, params):
-        """Rechercher et filtrer les logs (50 par page, du plus récent au plus ancien)
+        """Rechercher, filtrer et exporter les logs
 
-        Les résultats sont mis en cache 60 s dans Redis. La première page de chaque
-        recherche avec critères est enregistrée dans l'historique (MongoDB).
+        - `format=json` (par défaut) : 50 logs par page, du plus récent au plus ancien (RM13),
+          mis en cache 60 s dans Redis. La première page de chaque recherche avec critères est
+          enregistrée dans l'historique (MongoDB).
+        - `format=csv` : téléchargement des résultats au format CSV (10 000 lignes maximum).
+
         Un client ne voit que les catégories autorisées pour son compte (RM16).
         """
+        if params.get("format") == "csv":
+            return _csv_response(search_svc.export_logs(params, current_user))
         try:
             return search_svc.search_logs(params, current_user)
         except search_svc.SearchError as exc:
             abort(400, message=str(exc))
-
-
-@logs_blp.route("/export")
-class LogsExport(MethodView):
-    @login_required_api
-    @logs_blp.arguments(LogQuerySchema, location="query")
-    @logs_blp.response(200, description="Fichier CSV (10 000 lignes maximum)",
-                       content_type="text/csv")
-    def get(self, params):
-        """Exporter les résultats d'une recherche en CSV"""
-        rows = search_svc.export_logs(params, current_user)
-        cols = ["timestamp", "level", "category", "event_type", "service", "message", "http_status",
-                "response_time_ms", "order_id", "product_id", "product_name", "payment_method", "amount",
-                "currency", "client_ip", "session_id", "user_id"]
-        buf = io.StringIO()
-        writer = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore")
-        writer.writeheader()
-        writer.writerows(rows)
-        return Response("﻿" + buf.getvalue(), mimetype="text/csv",
-                        headers={"Content-Disposition": "attachment; filename=logs_export.csv"})
 
 
 @logs_blp.route("/<string:log_id>")

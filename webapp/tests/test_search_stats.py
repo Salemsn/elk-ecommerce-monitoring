@@ -67,7 +67,7 @@ def test_log_detail_and_404(admin_client, clients):
 
 
 def test_export_csv(admin_client):
-    r = admin_client.get("/api/v1/logs/export?level=ERROR")
+    r = admin_client.get("/api/v1/logs?level=ERROR&format=csv")
     assert r.status_code == 200 and r.mimetype == "text/csv"
     lines = r.data.decode("utf-8-sig").splitlines()
     assert lines[0].startswith("timestamp,level,category")
@@ -104,10 +104,23 @@ def test_health_degraded_when_a_service_is_down(client, clients):
     assert r.json["status"] == "degraded" and r.json["checks"]["redis"]["status"] == "down"
 
 
+def test_swagger_can_hide_sections(clients, tmp_path):
+    from app import create_app
+    app = create_app({"TESTING": True, "SESSION_TYPE": None, "UPLOAD_FOLDER": str(tmp_path),
+                      "API_DOCS_SECTIONS": "Fichiers,Logs"}, clients=clients)
+    c = app.test_client()
+    paths = c.get("/api/openapi.json").json["paths"]
+    assert "/api/v1/files" in paths and "/api/v1/logs" in paths
+    assert "/api/v1/auth/login" not in paths and "/api/v1/users" not in paths
+    # une route cachée fonctionne toujours
+    assert c.post("/api/v1/auth/login", json={"email": "admin@ecommerce.tn", "password": "Admin@2026"}).status_code == 200
+    assert c.get("/api/v1/stats/summary").status_code == 200
+
+
 def test_openapi_spec_lists_all_endpoints(client):
     spec = client.get("/api/openapi.json").json
     paths = spec["paths"]
-    for p in ["/api/v1/auth/login", "/api/v1/logs", "/api/v1/logs/export", "/api/v1/logs/{log_id}",
+    for p in ["/api/v1/auth/login", "/api/v1/logs", "/api/v1/logs/{log_id}",
               "/api/v1/files", "/api/v1/files/{file_id}", "/api/v1/stats/summary", "/api/v1/users",
               "/api/v1/search-history"]:
         assert p in paths, p

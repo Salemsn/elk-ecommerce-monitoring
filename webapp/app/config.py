@@ -35,6 +35,10 @@ class Config:
     ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "Admin@2026")
     ADMIN_NAME = os.getenv("ADMIN_NAME", "Administrateur")
 
+    # Sections affichées dans Swagger UI (« all » pour tout afficher).
+    # Les routes non listées fonctionnent normalement mais ne sont pas documentées.
+    API_DOCS_SECTIONS = os.getenv("API_DOCS_SECTIONS", "all")
+
     # Documentation OpenAPI / Swagger (flask-smorest)
     API_TITLE = "E-Commerce Log Monitoring API"
     API_VERSION = "v1"

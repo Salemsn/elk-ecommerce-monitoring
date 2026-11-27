@@ -47,8 +47,13 @@ def create_app(test_config=None, clients=None):
     login_manager.user_loader(get_user)
 
     api = Api(app)
+    sections = app.config.get("API_DOCS_SECTIONS", "all")
+    documented = None if sections.strip().lower() == "all" else {s.strip() for s in sections.split(",")}
     for blp in ALL_BLUEPRINTS:
-        api.register_blueprint(blp)
+        if documented is None or blp.name in documented:
+            api.register_blueprint(blp)   # route + documentation Swagger
+        else:
+            app.register_blueprint(blp)   # route active, absente de la documentation
     app.register_blueprint(auth_bp)
     app.register_blueprint(web_bp)
 

@@ -89,8 +89,8 @@ les doublons en cas de réimport. Des fichiers d'exemple sont fournis dans `data
 | Méthode | Route | Rôle | Description |
 |---|---|---|---|
 | POST | `/api/v1/auth/login`, `/logout` · GET `/me` | tous | Session stockée dans Redis |
-| GET | `/api/v1/logs` | tous | Recherche plein texte + filtres (niveau, service, catégorie, dates), 50 par page, cache Redis 60 s |
-| GET | `/api/v1/logs/{id}`, `/api/v1/logs/export` | tous | Détail d'un log, export CSV |
+| GET | `/api/v1/logs` | tous | Recherche plein texte + filtres (niveau, service, catégorie, dates), 50 par page, cache Redis 60 s ; export CSV avec `format=csv` |
+| GET | `/api/v1/logs/{id}` | tous | Détail d'un log |
 | GET / POST | `/api/v1/files`, GET `/api/v1/files/{id}` | admin | Import CSV / JSON / TXT, validation, aperçu, statut d'indexation |
 | GET | `/api/v1/stats/summary`, `/timeline`, `/breakdown` | tous | KPI, évolution, répartition, Top 10 des erreurs |
 | GET / POST / PATCH | `/api/v1/users` | admin | Comptes clients et catégories autorisées |
